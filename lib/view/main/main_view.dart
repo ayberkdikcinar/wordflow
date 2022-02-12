@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
@@ -30,52 +32,56 @@ class _MainViewState extends BaseState<MainView> {
   Scaffold buildScaffold() => Scaffold(
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: () {
-                  mainViewModel.setCurrentAngleOfCard();
-                  debugPrint('Clicked');
-                },
-                child: TweenAnimationBuilder(
+              Observer(
+                builder: (_) => TweenAnimationBuilder(
                   tween: Tween<double>(
                       begin: 0, end: mainViewModel.angleOftheCard),
                   duration: const Duration(seconds: 1),
                   builder: (BuildContext context, double val, __) {
+                    if (val >= (pi / 2)) {
+                      mainViewModel.isCardFace = CardFace.back;
+                    } else {
+                      mainViewModel.isCardFace = CardFace.front;
+                    }
                     return Transform(
                       alignment: Alignment.center,
                       transform: Matrix4.identity()
                         ..setEntry(3, 2, 0.001)
                         ..rotateY(val),
                       // ignore: sized_box_for_whitespace
-                      child: Container(
-                        height: dynamicHeight(100),
-                        width: dynamicWidht(100),
-                        child: mainViewModel.isCardFace == CardFace.front
-                            ? Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: const DecorationImage(
-                                      image:
-                                          AssetImage("assets/card/front.png")),
+                      child: InkWell(
+                        onTap: () {
+                          mainViewModel.setCurrentAngleOfCard();
+                          debugPrint('Clicked');
+                        },
+                        child: SizedBox(
+                          height: 300,
+                          width: 200,
+                          child: mainViewModel.isCardFace == CardFace.front
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: const DecorationImage(
+                                        image: AssetImage(
+                                            "assets/card/front.png")),
+                                  ),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: const DecorationImage(
+                                        image:
+                                            AssetImage("assets/card/back.png")),
+                                  ),
                                 ),
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: const DecorationImage(
-                                      image:
-                                          AssetImage("assets/card/back.png")),
-                                ),
-                                child: const Text(
-                                  'This is a test',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
+                        ),
                       ),
                     );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

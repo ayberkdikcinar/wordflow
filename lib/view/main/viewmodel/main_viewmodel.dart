@@ -29,5 +29,6 @@ abstract class _MainViewModelBase with Store {
   @action
   void setCurrentAngleOfCard() {
     angleOftheCard = (angleOftheCard + pi) % (2 * pi);
+    //changeCardFace();
   }
 }
