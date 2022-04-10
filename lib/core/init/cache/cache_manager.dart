@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../constans/enums/preferances_keys.dart';
+import '../../constans/enums/app_enums.dart';
 
 class CacheManager {
   static final CacheManager _instance = CacheManager._init();

@@ -1,3 +1,3 @@
 class ApplicationConstants {
-  static const languagesAsset = 'assets/languages';
+  static const languagesAsset = 'assets/languages'; 
 }

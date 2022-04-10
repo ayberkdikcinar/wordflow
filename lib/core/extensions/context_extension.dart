@@ -9,11 +9,11 @@ extension ContextExtension on BuildContext {
   double get lowTextSize => MediaQuery.of(this).size.height * 0.014;
   double get normalTextSize => MediaQuery.of(this).size.height * 0.017;
   double get highTextSize => MediaQuery.of(this).size.height * 0.02;
-  double get extraHighTextSize => MediaQuery.of(this).size.height * 0.025;
+  double get extraHighTextSize => MediaQuery.of(this).size.height * 0.03;
 
   double get titleTextSize => MediaQuery.of(this).size.height * 0.028;
 
-  double get extraLowPadding => MediaQuery.of(this).size.height * 0.0035;
+  double get extraLowPadding => MediaQuery.of(this).size.height * 0.0025;
   double get lowPadding => MediaQuery.of(this).size.height * 0.005;
   double get normalPadding => MediaQuery.of(this).size.height * 0.01;
   double get highPadding => MediaQuery.of(this).size.height * 0.02;
@@ -32,8 +32,7 @@ extension ContextExtension on BuildContext {
 
   ThemeData get theme => Theme.of(this);
   Color get defaultTextColor {
-    if (Theme.of(this).textTheme.bodyText1 != null &&
-        Theme.of(this).textTheme.bodyText1!.color != null) {
+    if (Theme.of(this).textTheme.bodyText1 != null && Theme.of(this).textTheme.bodyText1!.color != null) {
       return Theme.of(this).textTheme.bodyText1!.color!;
     } else {
       return Colors.white;

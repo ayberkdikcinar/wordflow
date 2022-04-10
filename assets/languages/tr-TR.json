@@ -1,3 +1,13 @@
 {
-    "test": "test"
+    "test": "test",
+    "menuPlay": "OYNA",
+    "english": "İngilizce",
+    "turkish": "Türkçe",
+    "menuOptions": "AYARLAR",
+    "menuHelp": "YARDIM",
+    "menuExit": "ÇIKIŞ",
+    "musicVolume": "Müzik Sesi",
+    "sfxVolume": "Efekt Sesi",
+    "gameLanguage": "Oyun Dili",
+    "darkMode": "Koyu Mod"
 }

@@ -1,3 +1,13 @@
 {
-    "test": "test"
+    "test": "test",
+    "menuPlay": "PLAY",
+    "english": "English",
+    "turkish": "Turkish",
+    "menuOptions": "OPTIONS",
+    "menuHelp": "HELP",
+    "menuExit": "EXIT",
+    "musicVolume": "Music Volume",
+    "sfxVolume": "SFX Volume",
+    "gameLanguage": "Game Language",
+    "darkMode": "Dark Mode"
 }

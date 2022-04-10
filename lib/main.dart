@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordflow/view/main/main_view.dart';
+import 'package:wordflow/view/menu/menu_view.dart';
+import 'package:wordflow/view/settings/settings_view.dart';
 
 import 'core/constans/app_constants.dart';
 import 'core/init/cache/cache_manager.dart';
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: NavigationService.instance.navigatorKey,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       theme: context.watch<ThemeManager>().currentTheme(),
-      home: const MainView(),
+      home: const MenuView(),
     );
   }
 }
