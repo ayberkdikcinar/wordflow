@@ -29,19 +29,20 @@ class _SettingsViewState extends State<SettingsView> {
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
-          const Image(
-            image: AssetImage("assets/cards/pop-up-background.png"),
+          Image(
+            image: const AssetImage("assets/cards/pop-up-background.png"),
             fit: BoxFit.fill,
-            height: 330,
+            height: context.dynamicHeight(0.48),
           ),
           Positioned(
-            left: 110,
-            top: 10,
+            left: context.dynamicWidth(0.34),
+            top: context.dynamicHeight(0.02),
             child: Text(LocaleKeys.menuOptions.locale,
                 style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.extraHighTextSize)),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
+            padding:
+                EdgeInsets.only(left: context.extraHighPadding, right: context.extraHighPadding, top: context.extraHighPadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -72,8 +73,7 @@ class _SettingsViewState extends State<SettingsView> {
                     Expanded(
                         flex: 2,
                         child: Text(LocaleKeys.gameLanguage.locale,
-                            style: TextStyle(
-                                fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: context.theme.cardColor))),
+                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.red))),
                     Expanded(
                       child: languageDropDownButton(context),
                     )
@@ -88,7 +88,7 @@ class _SettingsViewState extends State<SettingsView> {
                     Expanded(
                       child: MenuSwitchButton(
                         icon: Icons.dangerous,
-                        title: "Hey",
+                        title: '',
                         onPressed: (val) {
                           context.read<ThemeManager>().changeDarkMode(val);
                         },
@@ -99,11 +99,10 @@ class _SettingsViewState extends State<SettingsView> {
               ],
             ),
           ),
-          PositionedIcon(context: context, bottom: 40, left: 90, imagePath: "assets/icons/tick.png", onTap: () {}),
           PositionedIcon(
               context: context,
-              bottom: 40,
-              left: 170,
+              bottom: 0,
+              left: context.dynamicWidth(0.4),
               imagePath: "assets/icons/close.png",
               onTap: () {
                 widget.closeClick();
@@ -125,7 +124,7 @@ class _SettingsViewState extends State<SettingsView> {
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;
-          if (newValue == "İngilizce") {
+          if (newValue == "İngilizce" || newValue == "English") {
             context.read<SettingsViewModel>().changeGameLanguage(Language.english);
             debugPrint(context.read<SettingsViewModel>().gameLanguage.toString());
           } else {

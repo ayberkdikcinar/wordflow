@@ -39,52 +39,35 @@ class _MenuSwitchButtonState extends State<MenuSwitchButton> {
           widget.onPressed(switchDefaultValue);
         });
       },
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: context.dynamicHeight(0.01)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [],
-                    )),
-                Expanded(
-                  flex: 4,
-                  child: Row(
-                    children: [
-                      Text(widget.title),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              height: context.dynamicHeight(0.04),
-                              child: FittedBox(
-                                child: Switch(
-                                  value: switchDefaultValue,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      switchDefaultValue = value;
-                                      widget.onPressed(value);
-                                    });
-                                  },
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: context.dynamicHeight(0.01)),
+        child: Row(
+          children: [
+            Text(widget.title),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: context.dynamicHeight(0.06),
+                    child: FittedBox(
+                      child: Switch(
+                        activeColor: Colors.white,
+                        value: switchDefaultValue,
+                        onChanged: (value) {
+                          setState(() {
+                            switchDefaultValue = value;
+                            widget.onPressed(value);
+                          });
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

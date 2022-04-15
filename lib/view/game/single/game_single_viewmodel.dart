@@ -2,17 +2,21 @@ import 'package:mobx/mobx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:wordflow/view/game/board/board.dart';
-import 'package:wordflow/view/game/player/player.dart';
+import 'package:wordflow/view/player/player.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
+// ignore: library_prefixes
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+part 'game_single_viewmodel.g.dart';
 
-part 'game_viewmodel.g.dart';
+enum ClickResponse { wordIsTrue, wordIsFalse, notYourTurn }
 
-enum ClickResponse { wordIsTrue, wordIsFalse }
+class GameSingleViewModel = _GameSingleViewModelBase with _$GameSingleViewModel;
 
-class GameViewModel = _GameViewModelBase with _$GameViewModel;
-
-abstract class _GameViewModelBase with Store {
+abstract class _GameSingleViewModelBase with Store {
   late BuildContext context;
+
+  @observable
+  late IO.Socket socket;
   @observable
   int round = 0;
   @observable
@@ -23,7 +27,7 @@ abstract class _GameViewModelBase with Store {
 
   Board board = Board();
   Player player = Player("Ayberk");
- 
+
   @action
   void getModelAndFillData() {
     if (currentGameLanguage() == Language.turkish) {
@@ -52,6 +56,21 @@ abstract class _GameViewModelBase with Store {
           "hint": "godzilla",
           "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
           "totalCount": "4"
+        },
+        {
+          "hint": "dağ",
+          "relatedWords": ["Everest", "Kayalık", "Tepe"],
+          "totalCount": "3"
+        },
+        {
+          "hint": "gökyüzü",
+          "relatedWords": ["Bulut", "Yağmur", "Gökkuşağı"],
+          "totalCount": "3"
+        },
+        {
+          "hint": "silah",
+          "relatedWords": ["Bıçak", "Mızrak", "Kılıç"],
+          "totalCount": "3"
         },
       ];
       board.fillTable(testDataTR);
@@ -82,10 +101,26 @@ abstract class _GameViewModelBase with Store {
           "relatedWords": ["Tokyo", "Giant", "Dinosaur", "Movie"],
           "totalCount": "4"
         },
+        {
+          "hint": "mountain",
+          "relatedWords": ["Everest", "Rock", "Hill"],
+          "totalCount": "3"
+        },
+        {
+          "hint": "sky",
+          "relatedWords": ["Cloud", "Rain", "Rainbow"],
+          "totalCount": "3"
+        },
+        {
+          "hint": "weapon",
+          "relatedWords": ["Knife", "Spear", "Sword"],
+          "totalCount": "3"
+        },
       ];
       board.fillTable(testDataEN);
     }
     board.setCurrentHint(round, currentGameLanguage());
+    board.applyRandomness();
   } //yes
 
   @action

@@ -7,10 +7,11 @@ import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/core/components/gameFinishedCard.dart';
 import 'package:wordflow/core/components/text/hintText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
-import 'package:wordflow/view/game/viewmodel/game_viewmodel.dart';
+
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
 import '/core/base/state/base_state.dart';
 import '/core/base/view/base_view.dart';
+import 'game_single_viewmodel.dart';
 
 class GameView extends StatefulWidget {
   const GameView({Key? key}) : super(key: key);
@@ -19,16 +20,16 @@ class GameView extends StatefulWidget {
 }
 
 class _GameViewState extends BaseState<GameView> {
-  late GameViewModel gameViewModel;
+  late GameSingleViewModel gameViewModel;
 
   @override
   Widget build(BuildContext context) {
     return BaseView(
       onModelReady: (context, model) {
-        gameViewModel = model as GameViewModel;
+        gameViewModel = model as GameSingleViewModel;
         gameViewModel.context = context;
       },
-      viewModel: GameViewModel(),
+      viewModel: GameSingleViewModel(),
       onInitState: () {
         gameViewModel.getModelAndFillData();
       },
@@ -84,14 +85,18 @@ class _GameViewState extends BaseState<GameView> {
   GridView boardCards() {
     return GridView.count(
       primary: false,
-      crossAxisCount: 3,
-      padding: EdgeInsets.all(context.highPadding),
+      crossAxisCount: 4,
+      childAspectRatio: 2.4 / 2.3,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+          context.extraLowPadding, context.extraHighPadding, context.extraLowPadding, context.extraLowPadding),
       //mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (var i = 0; i < gameViewModel.board.allWords.length; i++)
           Padding(
             padding: EdgeInsets.all(context.extraLowPadding),
             child: AnimatedCard(
+              cardStatus: 0,
               text: gameViewModel.board.allWords[i],
               onClickCallBack: (String text) {
                 ClickResponse response = gameViewModel.cardClicked(text);

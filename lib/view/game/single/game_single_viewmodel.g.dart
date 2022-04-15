@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'game_viewmodel.dart';
+part of 'game_single_viewmodel.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,8 +8,23 @@ part of 'game_viewmodel.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$GameViewModel on _GameViewModelBase, Store {
-  final _$roundAtom = Atom(name: '_GameViewModelBase.round');
+mixin _$GameSingleViewModel on _GameSingleViewModelBase, Store {
+  final _$socketAtom = Atom(name: '_GameSingleViewModelBase.socket');
+
+  @override
+  IO.Socket get socket {
+    _$socketAtom.reportRead();
+    return super.socket;
+  }
+
+  @override
+  set socket(IO.Socket value) {
+    _$socketAtom.reportWrite(value, super.socket, () {
+      super.socket = value;
+    });
+  }
+
+  final _$roundAtom = Atom(name: '_GameSingleViewModelBase.round');
 
   @override
   int get round {
@@ -24,7 +39,8 @@ mixin _$GameViewModel on _GameViewModelBase, Store {
     });
   }
 
-  final _$isGameFinishedAtom = Atom(name: '_GameViewModelBase.isGameFinished');
+  final _$isGameFinishedAtom =
+      Atom(name: '_GameSingleViewModelBase.isGameFinished');
 
   @override
   bool get isGameFinished {
@@ -39,7 +55,7 @@ mixin _$GameViewModel on _GameViewModelBase, Store {
     });
   }
 
-  final _$clickCountAtom = Atom(name: '_GameViewModelBase.clickCount');
+  final _$clickCountAtom = Atom(name: '_GameSingleViewModelBase.clickCount');
 
   @override
   int get clickCount {
@@ -55,52 +71,53 @@ mixin _$GameViewModel on _GameViewModelBase, Store {
   }
 
   final _$changeGameStatusAsyncAction =
-      AsyncAction('_GameViewModelBase.changeGameStatus');
+      AsyncAction('_GameSingleViewModelBase.changeGameStatus');
 
   @override
   Future<void> changeGameStatus() {
     return _$changeGameStatusAsyncAction.run(() => super.changeGameStatus());
   }
 
-  final _$_GameViewModelBaseActionController =
-      ActionController(name: '_GameViewModelBase');
+  final _$_GameSingleViewModelBaseActionController =
+      ActionController(name: '_GameSingleViewModelBase');
 
   @override
   void getModelAndFillData() {
-    final _$actionInfo = _$_GameViewModelBaseActionController.startAction(
-        name: '_GameViewModelBase.getModelAndFillData');
+    final _$actionInfo = _$_GameSingleViewModelBaseActionController.startAction(
+        name: '_GameSingleViewModelBase.getModelAndFillData');
     try {
       return super.getModelAndFillData();
     } finally {
-      _$_GameViewModelBaseActionController.endAction(_$actionInfo);
+      _$_GameSingleViewModelBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   ClickResponse cardClicked(String cardText) {
-    final _$actionInfo = _$_GameViewModelBaseActionController.startAction(
-        name: '_GameViewModelBase.cardClicked');
+    final _$actionInfo = _$_GameSingleViewModelBaseActionController.startAction(
+        name: '_GameSingleViewModelBase.cardClicked');
     try {
       return super.cardClicked(cardText);
     } finally {
-      _$_GameViewModelBaseActionController.endAction(_$actionInfo);
+      _$_GameSingleViewModelBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   ClickResponse isWordTrue(String clickedWord) {
-    final _$actionInfo = _$_GameViewModelBaseActionController.startAction(
-        name: '_GameViewModelBase.isWordTrue');
+    final _$actionInfo = _$_GameSingleViewModelBaseActionController.startAction(
+        name: '_GameSingleViewModelBase.isWordTrue');
     try {
       return super.isWordTrue(clickedWord);
     } finally {
-      _$_GameViewModelBaseActionController.endAction(_$actionInfo);
+      _$_GameSingleViewModelBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   String toString() {
     return '''
+socket: ${socket},
 round: ${round},
 isGameFinished: ${isGameFinished},
 clickCount: ${clickCount}

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 
 class GameFinishedCard extends StatefulWidget {
-  const GameFinishedCard({Key? key, required this.continueClick, required this.retryClick, required this.homeClick}) : super(key: key);
+  const GameFinishedCard(
+      {Key? key, required this.continueClick, required this.retryClick, required this.homeClick, this.score = 0})
+      : super(key: key);
   final Function continueClick;
   final Function retryClick;
   final Function homeClick;
+  final int score;
   @override
   State<GameFinishedCard> createState() => _GameFinishedCardState();
 }
@@ -23,9 +26,40 @@ class _GameFinishedCardState extends State<GameFinishedCard> {
             fit: BoxFit.fill,
             image: AssetImage('assets/cards/game-finished.png'),
           ),
-          PositionedIcon(context: context, bottom: 0, left: 40, imagePath: 'assets/icons/continue.png', onTap: widget.continueClick),
-          PositionedIcon(context: context, bottom: 0, left: 130, imagePath: 'assets/icons/retry.png', onTap: widget.retryClick),
-          PositionedIcon(context: context, bottom: 0, left: 220, imagePath: 'assets/icons/home.png', onTap: widget.homeClick),
+          Positioned(
+            child: Text(
+              'GAME FINISHED',
+              style: TextStyle(color: context.defaultTextColor, fontWeight: FontWeight.bold),
+            ),
+            top: context.dynamicHeight(0.093),
+            left: context.dynamicWidth(0.25),
+          ),
+          Positioned(
+            child: Text(
+              'SCORE: ${widget.score}',
+              style: TextStyle(color: context.defaultTextColor),
+            ),
+            bottom: context.dynamicHeight(0.09),
+            left: context.dynamicWidth(0.3),
+          ),
+          PositionedIcon(
+              context: context,
+              bottom: 0,
+              left: context.dynamicWidth(0.1),
+              imagePath: 'assets/icons/continue.png',
+              onTap: widget.continueClick),
+          PositionedIcon(
+              context: context,
+              bottom: 0,
+              left: context.dynamicWidth(0.3),
+              imagePath: 'assets/icons/retry.png',
+              onTap: widget.retryClick),
+          PositionedIcon(
+              context: context,
+              bottom: 0,
+              left: context.dynamicWidth(0.5),
+              imagePath: 'assets/icons/home.png',
+              onTap: widget.homeClick),
         ],
       ),
     );
@@ -58,8 +92,8 @@ class PositionedIcon extends StatelessWidget {
           onTap();
         },
         child: SizedBox(
-          height: context.dynamicHeight(0.07),
-          width: context.dynamicWidth(0.2),
+          height: context.dynamicHeight(0.06),
+          width: context.dynamicWidth(0.15),
           child: Image(
             image: AssetImage(imagePath),
             fit: BoxFit.fill,

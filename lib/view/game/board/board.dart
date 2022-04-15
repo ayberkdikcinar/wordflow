@@ -1,3 +1,4 @@
+import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +10,20 @@ class Board = _BoardBase with _$Board;
 abstract class _BoardBase with Store {
   List<WordsRelation> wordsRelationList = [];
   List<String> allWords = [];
+  Map<String, int> statusOfCards = {}; //0 means not clicked, 1 means clicked and true. 2 means clicked and false.
 
   @observable
   String currentHint = "";
 
   void fillTable(List<Map<String, Object>> data) {
-    wordsRelationList = [];
     wordsRelationList = data.map((e) => WordsRelation.fromJson(e)).toList();
+  }
+
+  void applyRandomness() {
     randomize();
+    for (var item in allWords) {
+      statusOfCards.addAll({item: 0});
+    }
   }
 
   void randomize() {
@@ -42,5 +49,9 @@ abstract class _BoardBase with Store {
           wordsRelationList[round].hint.toString() +
           "\":";
     }
+  }
+
+  String getCurrentHint() {
+    return currentHint;
   }
 }

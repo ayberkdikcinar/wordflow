@@ -7,11 +7,14 @@ import 'package:wordflow/core/components/customButton.dart';
 import 'package:wordflow/core/constans/enums/app_enums.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 import 'package:wordflow/core/extensions/string_extension.dart';
-import 'package:wordflow/view/game/game_view.dart';
+import 'package:wordflow/view/game/multi/game_multi_view.dart';
+import 'package:wordflow/view/game/single/game_single_view.dart';
+import 'package:wordflow/view/game/single/game_single_view.dart';
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
 import 'package:wordflow/view/settings/settings_view.dart';
 
 import '../../core/init/language/locale_keys.g.dart';
+import 'game_mode_view.dart';
 
 class MenuView extends StatefulWidget {
   const MenuView({Key? key}) : super(key: key);
@@ -84,7 +87,12 @@ class _MenuViewState extends State<MenuView> {
   Widget conditionalWidget(MenuState menuOptions) {
     switch (menuOptions) {
       case MenuState.play:
+        return const GameModView();
+      //return const GameMultiView();
+      case MenuState.singlePlayer:
         return const GameView();
+      case MenuState.multiPlayer:
+        return const GameMultiView();
       case MenuState.options:
         return Padding(
           padding: EdgeInsets.all(context.highPadding),

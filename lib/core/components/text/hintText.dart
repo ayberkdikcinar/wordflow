@@ -8,7 +8,7 @@ class HintText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontSize: context.titleTextSize, fontWeight: FontWeight.w700),
+      style: TextStyle(fontSize: context.highTextSize, fontWeight: FontWeight.w700),
     );
   }
 }

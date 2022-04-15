@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum MenuState { options, play, help, exit, main }
+enum MenuState { options, play, singlePlayer, multiPlayer, help, exit, main }
 
 class MenuViewModel extends ChangeNotifier {
   MenuState _currentState = MenuState.main;

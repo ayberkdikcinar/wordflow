@@ -8,7 +8,8 @@ class CardText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontSize: context.normalTextSize, fontWeight: FontWeight.w700, color: Colors.black),
+      style: TextStyle(fontSize: context.highTextSize, fontWeight: FontWeight.w700, color: Colors.black),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
