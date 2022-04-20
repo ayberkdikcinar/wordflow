@@ -70,12 +70,19 @@ mixin _$GameSingleViewModel on _GameSingleViewModelBase, Store {
     });
   }
 
-  final _$changeGameStatusAsyncAction =
-      AsyncAction('_GameSingleViewModelBase.changeGameStatus');
+  final _$gameStatusAtom = Atom(name: '_GameSingleViewModelBase.gameStatus');
 
   @override
-  Future<void> changeGameStatus() {
-    return _$changeGameStatusAsyncAction.run(() => super.changeGameStatus());
+  GameStatus get gameStatus {
+    _$gameStatusAtom.reportRead();
+    return super.gameStatus;
+  }
+
+  @override
+  set gameStatus(GameStatus value) {
+    _$gameStatusAtom.reportWrite(value, super.gameStatus, () {
+      super.gameStatus = value;
+    });
   }
 
   final _$_GameSingleViewModelBaseActionController =
@@ -120,7 +127,8 @@ mixin _$GameSingleViewModel on _GameSingleViewModelBase, Store {
 socket: ${socket},
 round: ${round},
 isGameFinished: ${isGameFinished},
-clickCount: ${clickCount}
+clickCount: ${clickCount},
+gameStatus: ${gameStatus}
     ''';
   }
 }

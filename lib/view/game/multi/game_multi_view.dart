@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
+import 'package:wordflow/core/components/alertCard.dart';
 import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/core/components/gameFinishedCard.dart';
 import 'package:wordflow/core/components/text/hintText.dart';
@@ -33,7 +34,6 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
       },
       viewModel: GameMultiViewModel(),
       onInitState: () {
-        // gameViewModel.getModelAndFillData();
         gameViewModel.socketConnect();
       },
       onPageBuilder: (context) => SafeArea(child: buildScaffold()),
@@ -44,32 +44,77 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
         return Stack(
           fit: StackFit.expand,
           children: [
-            if (gameViewModel.isGameStarted)
-              Container(
-                color: Colors.orange,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(children: [
-                      Expanded(
-                        child: Text(gameViewModel.round.toString()),
-                      ),
-                      Expanded(
-                        child: Text(gameViewModel.player2.getName!),
-                      )
-                    ]),
-                    hintTextWithPadding(),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: boardCards(),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            else if (gameViewModel.isGameFinished)
+            if (gameViewModel.gameStatus == GameStatus.initializing) InQueueView(model: gameViewModel),
+            if (gameViewModel.gameStatus == GameStatus.started || gameViewModel.gameStatus == GameStatus.stopped)
+              Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    color: Colors.orange,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            color: Colors.black26,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.arrow_back_outlined, size: 30),
+                                  onPressed: () {
+                                    gameViewModel.handleDisconnect('data');
+                                    context.read<MenuViewModel>().changeStatus(MenuState.main);
+                                  },
+                                ),
+                                const Text('Main menu'),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              const Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('Find 3 words related with the given clue;'),
+                                  )),
+                              Expanded(flex: 2, child: hintTextWithPadding()),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 10,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: boardCards(),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  if (gameViewModel.gameStatus == GameStatus.stopped)
+                    Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: Center(
+                          child: Padding(
+                        padding: EdgeInsets.all(context.highPadding),
+                        child: AlertCard(
+                            continueClick: () {},
+                            retryClick: () {},
+                            homeClick: () {
+                              //gameViewModel.changeGameStatus();
+                              context.read<MenuViewModel>().changeStatus(MenuState.main);
+                            }),
+                      )),
+                    ),
+                ],
+              ),
+            if (gameViewModel.gameStatus == GameStatus.finished)
               Container(
                 color: Colors.black.withOpacity(0.5),
                 child: Center(
@@ -83,16 +128,14 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                         context.read<MenuViewModel>().changeStatus(MenuState.main);
                       }),
                 )),
-              )
-            else
-              const InQueueView()
+              ),
           ],
         );
       });
 
   Padding hintTextWithPadding() {
     return Padding(
-      padding: EdgeInsets.all(context.highPadding),
+      padding: EdgeInsets.all(context.lowPadding),
       child: Observer(builder: (_) {
         //return const Text('');
         return HintText(text: gameViewModel.board.currentHint);
@@ -101,19 +144,21 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
   }
 
   GridView boardCards() {
+    double cardWidth = context.dynamicWidth(0.4);
+    double cardHeight = context.dynamicHeight(0.108);
     return GridView.count(
       primary: false,
-      crossAxisCount: 4,
-      childAspectRatio: 2.4 / 2.3,
+      crossAxisCount: 3,
+      childAspectRatio: cardWidth / cardHeight,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(
-          context.extraLowPadding, context.extraHighPadding, context.extraLowPadding, context.extraLowPadding),
+
       //mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (var i = 0; i < gameViewModel.cardListStatus.length; i++)
           Padding(
             padding: EdgeInsets.all(context.extraLowPadding),
             child: AnimatedCard(
+              isMultiplayer: true,
               cardStatus: gameViewModel.cardListStatus[gameViewModel.board.allWords[i]]!,
               text: gameViewModel.board.allWords[i],
               onClickCallBack: (String text) {

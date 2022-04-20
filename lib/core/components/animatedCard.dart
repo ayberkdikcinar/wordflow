@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:wordflow/core/components/text/cardText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../view/game/single/game_single_viewmodel.dart';
 
 enum CardFace { back, front }
@@ -13,6 +13,7 @@ enum CardFace { back, front }
 class AnimatedCard extends StatefulWidget {
   final bool isRotated;
   final int cardStatus;
+  final bool isMultiplayer;
   final String text;
   const AnimatedCard({
     Key? key,
@@ -20,6 +21,7 @@ class AnimatedCard extends StatefulWidget {
     this.onClickCallBack,
     this.isRotated = false,
     this.cardStatus = 0,
+    this.isMultiplayer = false,
   }) : super(key: key);
   final Function(String text)? onClickCallBack;
   @override
@@ -30,7 +32,7 @@ class _AnimatedCardState extends State<AnimatedCard> {
   CardFace currentCardFace = CardFace.back;
   double cardAngle = 0;
   bool isClickedOnce = false;
-  String backImagePath = "assets/cards/blue-agent.png";
+  Color backColor = Colors.blue.shade700;
   bool isRotated = false; //widget.isRotated;
   int cardStatus = 0;
   @override
@@ -45,16 +47,16 @@ class _AnimatedCardState extends State<AnimatedCard> {
     if (widget.cardStatus != cardStatus) {
       cardStatus = widget.cardStatus;
       if (cardStatus == 2) {
-        backImagePath = "assets/cards/grey-agent.png";
-        changeAngleOfCard();
+        backColor = Colors.grey;
+        changeAngleOfCard(false);
       } else if (cardStatus == 1) {
-        backImagePath = "assets/cards/blue-agent.png";
-        changeAngleOfCard();
+        backColor = Colors.blue.shade700;
+        changeAngleOfCard(true);
       }
     }
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: cardAngle),
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
       builder: (BuildContext context, double val, __) {
         if (val >= (pi / 2)) {
           currentCardFace = CardFace.back;
@@ -66,36 +68,58 @@ class _AnimatedCardState extends State<AnimatedCard> {
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.001)
             ..rotateY(val),
+
           // ignore: sized_box_for_whitespace
           child: InkWell(
-            onTap: () async {
-              if (widget.onClickCallBack != null && !isClickedOnce) {
-                ClickResponse response = await widget.onClickCallBack!(widget.text);
-                if (response == ClickResponse.wordIsTrue) {
-                  cardStatus = 1;
-                  changeAngleOfCard();
-                } else if (response == ClickResponse.wordIsFalse) {
-                  cardStatus = 2;
-                  backImagePath = "assets/cards/grey-agent.png";
-                  changeAngleOfCard();
-                } else {
-                  ///Means not your turn...
-                  cardStatus = 0;
-                  debugPrint('not your turn!!!!');
+              onTap: () async {
+                if (widget.onClickCallBack != null && !isClickedOnce) {
+                  ClickResponse response = await widget.onClickCallBack!(widget.text);
+                  if (response == ClickResponse.wordIsTrue) {
+                    cardStatus = 1;
+                    backColor = Colors.blue.shade700;
+                    changeAngleOfCard(true);
+                  } else if (response == ClickResponse.wordIsFalse) {
+                    cardStatus = 2;
+                    backColor = Colors.grey;
+                    changeAngleOfCard(false);
+                  } else {
+                    ///Means not your turn...
+                    cardStatus = 0;
+                    debugPrint('not your turn!!!!');
 
-                  ///Burdan gelen değer geri döndürülecek!
+                    ///Burdan gelen değer geri döndürülecek!
+                  }
                 }
-              }
-              //widget.onClick();
-              //debugPrint('tıklandı');
-            },
-            child: currentCardFace == CardFace.back
-                ? Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(image: AssetImage(backImagePath), fit: BoxFit.fill),
-                    ),
-                  )
-                : Stack(
+                //widget.onClick();
+                //debugPrint('tıklandı');
+              },
+              child: currentCardFace == CardFace.back
+                  ? Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(context.lowRadius), color: backColor,
+                        //image: DecorationImage(image: AssetImage(backImagePath), fit: BoxFit.fill),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CardText(
+                            text: widget.text,
+                            color: Colors.white,
+                          ),
+                          SvgPicture.asset(backColor == Colors.blue.shade700 ? 'assets/icons/happy.svg' : 'assets/icons/sad.svg',
+                              width: 25, height: 25)
+                        ],
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(context.lowRadius), color: Color.fromARGB(255, 205, 201, 195),
+                        border: Border.all(color: Color.fromARGB(255, 162, 178, 159), width: 3),
+
+                        //image: DecorationImage(image: AssetImage(backImagePath), fit: BoxFit.fill),
+                      ),
+                      child: Center(child: CardText(text: widget.text)),
+                    ) /*Stack(
                     alignment: Alignment.center,
                     fit: StackFit.expand,
                     children: [
@@ -110,18 +134,25 @@ class _AnimatedCardState extends State<AnimatedCard> {
                               width: context.dynamicWidth(0.26),
                               child: Center(child: CardText(text: widget.text))))
                     ],
-                  ),
-          ),
+                  ),*/
+              ),
         );
       },
     );
   }
 
-  void changeAngleOfCard() {
-    if (!isClickedOnce) {
-      cardAngle = (cardAngle + pi) % (2 * pi);
-      isClickedOnce = true;
-      setState(() {});
+  void changeAngleOfCard(bool isTrue) {
+    if (widget.isMultiplayer) {
+      if (!isClickedOnce) {
+        cardAngle = (cardAngle + pi * 2);
+        isClickedOnce = isTrue;
+      }
+    } else {
+      if (!isClickedOnce) {
+        cardAngle = (cardAngle + pi * 2);
+        isClickedOnce = true;
+      }
     }
+    setState(() {});
   }
 }

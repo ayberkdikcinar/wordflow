@@ -6,9 +6,15 @@ class HintText extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(fontSize: context.highTextSize, fontWeight: FontWeight.w700),
+    return Container(
+      alignment: Alignment.center,
+      height: context.dynamicHeight(0.2),
+      width: context.dynamicWidth(0.4),
+      decoration: BoxDecoration(border: Border.all(color: Colors.white), color: Colors.black),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(fontSize: context.highTextSize, fontWeight: FontWeight.w700),
+      ),
     );
   }
 }

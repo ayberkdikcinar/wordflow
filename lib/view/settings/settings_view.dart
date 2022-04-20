@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordflow/core/components/gameFinishedCard.dart';
 import 'package:wordflow/core/components/switchButton.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 import 'package:wordflow/core/extensions/string_extension.dart';
 import 'package:wordflow/core/init/language/locale_keys.g.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 
+import '../../core/components/positionedIcon.dart';
 import '../../core/init/theme/theme_manager.dart';
 
 class SettingsView extends StatefulWidget {

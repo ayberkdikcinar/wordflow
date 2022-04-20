@@ -55,50 +55,34 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
     });
   }
 
-  final _$clickCountAtom = Atom(name: '_GameMultiViewModelBase.clickCount');
+  final _$trueWordCountAtom =
+      Atom(name: '_GameMultiViewModelBase.trueWordCount');
 
   @override
-  int get clickCount {
-    _$clickCountAtom.reportRead();
-    return super.clickCount;
+  int get trueWordCount {
+    _$trueWordCountAtom.reportRead();
+    return super.trueWordCount;
   }
 
   @override
-  set clickCount(int value) {
-    _$clickCountAtom.reportWrite(value, super.clickCount, () {
-      super.clickCount = value;
+  set trueWordCount(int value) {
+    _$trueWordCountAtom.reportWrite(value, super.trueWordCount, () {
+      super.trueWordCount = value;
     });
   }
 
-  final _$isGameFinishedAtom =
-      Atom(name: '_GameMultiViewModelBase.isGameFinished');
+  final _$gameStatusAtom = Atom(name: '_GameMultiViewModelBase.gameStatus');
 
   @override
-  bool get isGameFinished {
-    _$isGameFinishedAtom.reportRead();
-    return super.isGameFinished;
+  GameStatus get gameStatus {
+    _$gameStatusAtom.reportRead();
+    return super.gameStatus;
   }
 
   @override
-  set isGameFinished(bool value) {
-    _$isGameFinishedAtom.reportWrite(value, super.isGameFinished, () {
-      super.isGameFinished = value;
-    });
-  }
-
-  final _$isGameStartedAtom =
-      Atom(name: '_GameMultiViewModelBase.isGameStarted');
-
-  @override
-  bool get isGameStarted {
-    _$isGameStartedAtom.reportRead();
-    return super.isGameStarted;
-  }
-
-  @override
-  set isGameStarted(bool value) {
-    _$isGameStartedAtom.reportWrite(value, super.isGameStarted, () {
-      super.isGameStarted = value;
+  set gameStatus(GameStatus value) {
+    _$gameStatusAtom.reportWrite(value, super.gameStatus, () {
+      super.gameStatus = value;
     });
   }
 
@@ -117,12 +101,52 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
     });
   }
 
-  final _$changeGameStatusAsyncAction =
-      AsyncAction('_GameMultiViewModelBase.changeGameStatus');
+  final _$playingPlayerIdAtom =
+      Atom(name: '_GameMultiViewModelBase.playingPlayerId');
 
   @override
-  Future<void> changeGameStatus() {
-    return _$changeGameStatusAsyncAction.run(() => super.changeGameStatus());
+  String get playingPlayerId {
+    _$playingPlayerIdAtom.reportRead();
+    return super.playingPlayerId;
+  }
+
+  @override
+  set playingPlayerId(String value) {
+    _$playingPlayerIdAtom.reportWrite(value, super.playingPlayerId, () {
+      super.playingPlayerId = value;
+    });
+  }
+
+  final _$whoPlaysForNextHintAtom =
+      Atom(name: '_GameMultiViewModelBase.whoPlaysForNextHint');
+
+  @override
+  String get whoPlaysForNextHint {
+    _$whoPlaysForNextHintAtom.reportRead();
+    return super.whoPlaysForNextHint;
+  }
+
+  @override
+  set whoPlaysForNextHint(String value) {
+    _$whoPlaysForNextHintAtom.reportWrite(value, super.whoPlaysForNextHint, () {
+      super.whoPlaysForNextHint = value;
+    });
+  }
+
+  final _$readyPlayerIdsAtom =
+      Atom(name: '_GameMultiViewModelBase.readyPlayerIds');
+
+  @override
+  List<String> get readyPlayerIds {
+    _$readyPlayerIdsAtom.reportRead();
+    return super.readyPlayerIds;
+  }
+
+  @override
+  set readyPlayerIds(List<String> value) {
+    _$readyPlayerIdsAtom.reportWrite(value, super.readyPlayerIds, () {
+      super.readyPlayerIds = value;
+    });
   }
 
   final _$_GameMultiViewModelBaseActionController =
@@ -195,15 +219,39 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
   }
 
   @override
+  void handleDisconnect(dynamic data) {
+    final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
+        name: '_GameMultiViewModelBase.handleDisconnect');
+    try {
+      return super.handleDisconnect(data);
+    } finally {
+      _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void handleUnReady(dynamic data) {
+    final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
+        name: '_GameMultiViewModelBase.handleUnReady');
+    try {
+      return super.handleUnReady(data);
+    } finally {
+      _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 board: ${board},
 cardListStatus: ${cardListStatus},
 round: ${round},
-clickCount: ${clickCount},
-isGameFinished: ${isGameFinished},
-isGameStarted: ${isGameStarted},
-isReferee: ${isReferee}
+trueWordCount: ${trueWordCount},
+gameStatus: ${gameStatus},
+isReferee: ${isReferee},
+playingPlayerId: ${playingPlayerId},
+whoPlaysForNextHint: ${whoPlaysForNextHint},
+readyPlayerIds: ${readyPlayerIds}
     ''';
   }
 }

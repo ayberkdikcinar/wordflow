@@ -9,5 +9,15 @@
     "musicVolume": "Müzik Sesi",
     "sfxVolume": "Efekt Sesi",
     "gameLanguage": "Oyun Dili",
-    "darkMode": "Koyu Mod"
+    "singlePlayer": "TEK OYUNCULU",
+    "multiPlayer": "ÇOK OYUNCULU",
+    "mainMenu": "ANA MENÜ",
+    "darkMode": "Koyu Mod",
+    "willPopScope": "Çıkmak için tekrar basınız.",
+    "inQueue": "Oyun Aranıyor",
+    "cancel": "İPTAL",
+    "score": "Puan",
+    "gameDropped": "OYUN DÜŞTÜ",
+    "gameFinished": "OYUN BİTTİ",
+    "gameDropError": "Rakibin bağlantısı kesildi."
 }

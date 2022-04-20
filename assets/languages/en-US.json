@@ -9,5 +9,15 @@
     "musicVolume": "Music Volume",
     "sfxVolume": "SFX Volume",
     "gameLanguage": "Game Language",
-    "darkMode": "Dark Mode"
+    "singlePlayer": "SINGLE PLAYER",
+    "multiPlayer": "MULTI PLAYER",
+    "mainMenu": "MAIN MENU",
+    "darkMode": "Dark Mode",
+    "willPopScope": "Press again to exit",
+    "inQueue": "In Queue",
+    "cancel": "CANCEL",
+    "score": "Score",
+    "gameDropped": "GAME DROPPED",
+    "gameFinished": "GAME FINISHED",
+    "gameDropError": "Your opponent's connection\n has been lost."
 }

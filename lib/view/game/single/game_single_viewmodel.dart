@@ -6,6 +6,8 @@ import 'package:wordflow/view/player/player.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 // ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../multi/game_multi_viewmodel.dart';
 part 'game_single_viewmodel.g.dart';
 
 enum ClickResponse { wordIsTrue, wordIsFalse, notYourTurn }
@@ -25,11 +27,15 @@ abstract class _GameSingleViewModelBase with Store {
   @observable
   int clickCount = 0;
 
+  @observable
+  GameStatus gameStatus = GameStatus.initializing;
+
   Board board = Board();
   Player player = Player("Ayberk");
 
   @action
   void getModelAndFillData() {
+    board.clearData();
     if (currentGameLanguage() == Language.turkish) {
       var testDataTR = [
         {
@@ -127,38 +133,52 @@ abstract class _GameSingleViewModelBase with Store {
   ClickResponse cardClicked(String cardText) {
     ///hinti burda değiştiriyorum, oyunu burada bitiriyorum, textin doğruluğunu burada yapıyorum
     clickCount++;
-    debugPrint(player.getScore.toString());
+
     ClickResponse response = isWordTrue(cardText);
 
-    if (clickCount == int.parse(board.wordsRelationList[round].totalCount!)) {
+    if (clickCount == board.allWords.length) {
+      gameStatus = GameStatus.finished;
+      clickCount = 0;
+      round = 0;
+    } else {
+      while (int.parse(board.wordsRelationList[round].totalCount!) == 0) {
+        round++;
+      }
+      board.setCurrentHint(round, currentGameLanguage());
+    }
+
+    /* if (clickCount == int.parse(board.wordsRelationList[round].totalCount!)) {
       debugPrint(board.wordsRelationList.length.toString());
       if (round < board.wordsRelationList.length - 1) {
         round++;
         clickCount = 0;
         board.setCurrentHint(round, currentGameLanguage());
       } else {
-        changeGameStatus();
+        gameStatus = GameStatus.finished;
       }
-    }
+    }*/
     return response;
   }
 
   @action
   ClickResponse isWordTrue(String clickedWord) {
-    if (board.wordsRelationList[round].relatedWords != null) {
+    try {
       if (board.wordsRelationList[round].relatedWords!.contains(clickedWord)) {
-        player.setScore(player.getScore + 1);
+        player.setScore(player.getScore + 10);
+        int totalCount = int.parse(board.wordsRelationList[round].totalCount!);
+        board.wordsRelationList[round].totalCount = (totalCount - 1).toString();
         return ClickResponse.wordIsTrue;
       }
+      player.setScore(player.getScore - 2);
+      for (var item in board.wordsRelationList) {
+        if (item.relatedWords!.contains(clickedWord)) {
+          item.totalCount = (int.parse(item.totalCount!) - 1).toString();
+        }
+      }
+      return ClickResponse.wordIsFalse;
+    } catch (e) {
       return ClickResponse.wordIsFalse;
     }
-    return ClickResponse.wordIsFalse;
-  }
-
-  @action
-  Future<void> changeGameStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    isGameFinished = !isGameFinished;
   }
 
   Language currentGameLanguage() {

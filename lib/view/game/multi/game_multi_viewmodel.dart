@@ -13,10 +13,13 @@ import '../single/game_single_viewmodel.dart';
 
 part 'game_multi_viewmodel.g.dart';
 
+enum GameStatus { stopped, finished, started, initializing }
+
 class GameMultiViewModel = _GameMultiViewModelBase with _$GameMultiViewModel;
 
 abstract class _GameMultiViewModelBase with Store {
   late BuildContext context;
+
   late IO.Socket socket;
 
   @observable
@@ -29,14 +32,12 @@ abstract class _GameMultiViewModelBase with Store {
   int round = 0;
 
   @observable
-  int clickCount = 0;
-  @observable
-  bool isGameFinished = false;
-  @observable
-  bool isGameStarted = false;
+  int trueWordCount = 0;
 
-  Player player1 = Player('You');
-  Player player2 = Player('Opponnent');
+  @observable
+  GameStatus gameStatus = GameStatus.initializing;
+
+  Player player = Player('You');
 
   @observable
   var isReferee = false;
@@ -44,59 +45,47 @@ abstract class _GameMultiViewModelBase with Store {
   @observable
   String playingPlayerId = '';
 
+  @observable
+  String whoPlaysForNextHint = '';
+
+  @observable
   List<String> readyPlayerIds = [];
 
   @action
   void socketConnect() {
-    socket = IO.io("http://192.168.144.1:3000", <String, dynamic>{
+    socket = IO.io("http://192.168.1.5:3000", <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
+
     socket.connect();
-    //tur arttıgında referee oyuncuda kartlar normale dönüyor.
+
     socket.onConnect((data) {
       debugPrint('connected');
       socket.emit('ready');
+      socket.on('unready', handleUnReady);
 
-      socket.on("cardClicked", (data) {
-        final Map<String, int> cardListStatusData = Map<String, int>.from(data['cardListStatus']);
-        cardListStatus = cardListStatusData;
-        round = int.parse(data['round'].toString());
-        board.currentHint = data['currentHint'].toString();
-      });
+      debugPrint('socketId' + socket.id.toString());
+      socket.on("cardClicked", handleCardClick);
       socket.on("playingPlayerId", (id) {
         playingPlayerId = id.toString();
       });
-
-      socket.on('startGame', (playerIds) {
-        debugPrint('referee is' + playerIds[0]);
-        isReferee = socket.id == playerIds[0];
-        final List<String> playerIdsData = List.from(playerIds).map((e) => e as String).toList();
-        readyPlayerIds.addAll(playerIdsData);
-        playingPlayerId = readyPlayerIds[0].toString();
-        debugPrint(readyPlayerIds.toString());
-        getModelAndFillData();
-        if (isReferee) {
-          //this is closed for the test issue.
-          loadBoardRandomly();
-        }
-        //loadBoardRandomly();
-        debugPrint(board.allWords.length.toString());
-        socket.on('load', (data) {
-          final List<String> allWordsData = List.from(data['allWords']).map((e) => e as String).toList();
-          board.allWords = allWordsData;
-
-          board.currentHint = data['currentHint'].toString();
-          final Map<String, int> cardListStatusData = Map<String, int>.from(data['cardListStatus']);
-          cardListStatus = cardListStatusData;
-        });
-
-        startGame();
+      socket.on("hintChange", (id) {
+        whoPlaysForNextHint = id;
       });
+      socket.on('mySocketId', (mess) {
+        debugPrint('myId:' + mess.toString());
+        socket.id = mess;
+      });
+      socket.on('playerDisconnected', handleDisconnect);
+      socket.on('startGame', handleStartGame);
+      socket.on('load', handleLoadGame);
     });
 
     socket.onDisconnect((_) {
       debugPrint('disconnected');
+      readyPlayerIds.remove(socket.id);
+      debugPrint(readyPlayerIds.toString());
     });
   }
 
@@ -113,7 +102,7 @@ abstract class _GameMultiViewModelBase with Store {
 
   @action
   void startGame() {
-    isGameStarted = true;
+    gameStatus = GameStatus.started;
     debugPrint(socket.id.toString());
     //board.cards = cardList;
   }
@@ -123,6 +112,7 @@ abstract class _GameMultiViewModelBase with Store {
   //
   @action
   void getModelAndFillData() {
+    board.clearData();
     if (currentGameLanguage() == Language.turkish) {
       var testDataTR = [
         {
@@ -176,8 +166,8 @@ abstract class _GameMultiViewModelBase with Store {
         },
         {
           "hint": "green",
-          "relatedWords": ["Dollar", "Alien"],
-          "totalCount": "2"
+          "relatedWords": ["Dollar", "Alien", "Grey"],
+          "totalCount": "3"
         },
         {
           "hint": "tennis",
@@ -206,8 +196,8 @@ abstract class _GameMultiViewModelBase with Store {
         },
         {
           "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Giant", "Dinosaur", "Movie"],
-          "totalCount": "4"
+          "relatedWords": ["Giant", "Dinosaur", "Movie"],
+          "totalCount": "3"
         },
       ];
       board.fillTable(testDataEN);
@@ -217,38 +207,47 @@ abstract class _GameMultiViewModelBase with Store {
 
   @action
   ClickResponse cardClicked(String cardText) {
-    ///hinti burda değiştiriyorum, oyunu burada bitiriyorum, textin doğruluğunu burada yapıyorum
-    debugPrint(playingPlayerId.toString());
+    debugPrint('Who plays:' + playingPlayerId.toString());
+
     if (playingPlayerId == socket.id.toString()) {
-      debugPrint('player oynadı:' + playingPlayerId + " socketid:" + socket.id.toString());
-      clickCount++;
       ClickResponse response = isWordTrue(cardText);
 
-      if (clickCount == int.parse(board.wordsRelationList[round].totalCount!)) {
-        debugPrint(board.wordsRelationList.length.toString());
-        if (round < board.wordsRelationList.length - 1) {
-          round++;
-          clickCount = 0;
-          board.setCurrentHint(round, currentGameLanguage());
-        } else {
-          changeGameStatus();
-        }
+      if (trueWordCount == board.allWords.length) {
+        gameStatus = GameStatus.finished;
       }
+      int whoPlayed = readyPlayerIds.indexOf(playingPlayerId);
       if (response == ClickResponse.wordIsFalse) {
         cardListStatus[cardText] = 2;
-      } else {
-        cardListStatus[cardText] = 1;
-      }
-
-      socket.emit("cardClicked", {"round": round, "currentHint": board.getCurrentHint(), "cardListStatus": cardListStatus});
-      int whoPlayed = readyPlayerIds.indexOf(socket.id.toString());
-      if (response != ClickResponse.wordIsTrue) {
         if (whoPlayed == 1) {
           socket.emit("playingPlayerId", readyPlayerIds[0]);
         } else {
           socket.emit("playingPlayerId", readyPlayerIds[1]);
         }
+      } else {
+        cardListStatus[cardText] = 1;
+        trueWordCount++;
       }
+      if (trueWordCount % 3 == 0 && trueWordCount != 0) {
+        round++;
+        board.setCurrentHint(round, currentGameLanguage());
+        debugPrint('playing:' + playingPlayerId);
+        debugPrint('whoWillPlaynextHint' + whoPlaysForNextHint);
+
+        int whoPlayed = readyPlayerIds.indexOf(whoPlaysForNextHint.toString());
+        if (whoPlayed == 1) {
+          socket.emit("hintChange", readyPlayerIds[0]);
+        } else {
+          socket.emit("hintChange", readyPlayerIds[1]);
+        }
+        playingPlayerId = whoPlaysForNextHint;
+        socket.emit("playingPlayerId", playingPlayerId);
+      }
+      socket.emit("cardClicked", {
+        "round": round,
+        "currentHint": board.getCurrentHint(),
+        "cardListStatus": cardListStatus,
+        "trueWordCount": trueWordCount
+      });
       return response;
     }
 
@@ -266,13 +265,55 @@ abstract class _GameMultiViewModelBase with Store {
     return ClickResponse.wordIsFalse;
   }
 
-  @action
-  Future<void> changeGameStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    isGameFinished = !isGameFinished;
-  }
-
   Language currentGameLanguage() {
     return context.read<SettingsViewModel>().gameLanguage;
+  }
+
+  //Socket handlers
+  void handleCardClick(data) {
+    final Map<String, int> cardListStatusData = Map<String, int>.from(data['cardListStatus']);
+    cardListStatus = cardListStatusData;
+    round = int.parse(data['round'].toString());
+    board.currentHint = data['currentHint'].toString();
+    trueWordCount = int.parse(data['trueWordCount'].toString());
+  }
+
+  @action
+  void handleDisconnect(data) {
+    debugPrint('Your opponent has left the game...');
+    gameStatus = GameStatus.stopped;
+    socket.clearListeners();
+    socket.disconnect();
+  }
+
+  @action
+  void handleUnReady(data) {
+    debugPrint('You have left the queue...');
+    socket.emit('unready');
+    socket.clearListeners();
+    socket.disconnect();
+  }
+
+  void handleStartGame(playerIds) {
+    isReferee = socket.id == playerIds[0];
+    final List<String> playerIdsData = List.from(playerIds).map((e) => e as String).toList();
+    readyPlayerIds.addAll(playerIdsData);
+    playingPlayerId = readyPlayerIds[0].toString();
+    whoPlaysForNextHint = readyPlayerIds[1].toString();
+    getModelAndFillData();
+
+    if (isReferee) {
+      loadBoardRandomly();
+    }
+    startGame();
+  }
+
+  void handleLoadGame(data) {
+    final List<String> allWordsData = List.from(data['allWords']).map((e) => e as String).toList();
+    board.allWords = allWordsData;
+
+    board.currentHint = data['currentHint'].toString();
+    final Map<String, int> cardListStatusData = Map<String, int>.from(data['cardListStatus']);
+    cardListStatus = cardListStatusData;
   }
 }

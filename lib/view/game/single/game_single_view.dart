@@ -9,6 +9,7 @@ import 'package:wordflow/core/components/text/hintText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
+import '../multi/game_multi_viewmodel.dart';
 import '/core/base/state/base_state.dart';
 import '/core/base/view/base_view.dart';
 import 'game_single_viewmodel.dart';
@@ -20,6 +21,7 @@ class GameView extends StatefulWidget {
 }
 
 class _GameViewState extends BaseState<GameView> {
+  // ignore: prefer_typing_uninitialized_variables
   late GameSingleViewModel gameViewModel;
 
   @override
@@ -42,19 +44,55 @@ class _GameViewState extends BaseState<GameView> {
           fit: StackFit.expand,
           children: [
             Container(
-              color: Colors.orange,
+              color: const Color.fromARGB(255, 34, 40, 49),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  hintTextWithPadding(),
                   Expanded(
-                    child: boardCards(),
+                    flex: 1,
+                    child: Container(
+                      alignment: Alignment.topLeft,
+                      child: InkWell(
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Image(
+                            image: AssetImage('assets/icons/close_rect.png'),
+                          ),
+                        ),
+                        onTap: () {
+                          gameViewModel.gameStatus = GameStatus.finished;
+                          context.read<MenuViewModel>().changeStatus(MenuState.main);
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: EdgeInsets.all(context.lowPadding),
+                              child: Text(
+                                  'Find ${gameViewModel.board.wordsRelationList[gameViewModel.round].totalCount} words related with the given clue;'),
+                            )),
+                        Expanded(flex: 2, child: hintTextWithPadding()),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: boardCards(),
+                    ),
                   )
                 ],
               ),
             ),
-            if (gameViewModel.isGameFinished)
+            if (gameViewModel.gameStatus == GameStatus.finished)
               Container(
                 color: Colors.black.withOpacity(0.5),
                 child: Center(
@@ -62,9 +100,11 @@ class _GameViewState extends BaseState<GameView> {
                   padding: EdgeInsets.all(context.highPadding),
                   child: GameFinishedCard(
                       continueClick: () {},
-                      retryClick: () {},
+                      retryClick: () {
+                        context.read<MenuViewModel>().changeStatus(MenuState.play);
+                      },
                       homeClick: () {
-                        gameViewModel.changeGameStatus();
+                        gameViewModel.gameStatus = GameStatus.finished;
                         context.read<MenuViewModel>().changeStatus(MenuState.main);
                       }),
                 )),
@@ -75,21 +115,22 @@ class _GameViewState extends BaseState<GameView> {
 
   Padding hintTextWithPadding() {
     return Padding(
-      padding: EdgeInsets.all(context.highPadding),
+      padding: EdgeInsets.all(context.lowPadding),
       child: Observer(builder: (_) {
         return HintText(text: gameViewModel.board.currentHint);
       }),
     );
   }
 
-  GridView boardCards() {
+  Widget boardCards() {
+    double cardWidth = context.dynamicWidth(0.4);
+    double cardHeight = context.dynamicHeight(0.108);
     return GridView.count(
       primary: false,
-      crossAxisCount: 4,
-      childAspectRatio: 2.4 / 2.3,
+      crossAxisCount: 3,
+      childAspectRatio: cardWidth / cardHeight,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(
-          context.extraLowPadding, context.extraHighPadding, context.extraLowPadding, context.extraLowPadding),
+
       //mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (var i = 0; i < gameViewModel.board.allWords.length; i++)

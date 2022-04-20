@@ -1,7 +1,6 @@
-import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
-import 'package:flutter/material.dart';
+
 import 'package:mobx/mobx.dart';
 part 'board.g.dart';
 
@@ -37,7 +36,7 @@ abstract class _BoardBase with Store {
 
   @action
   setCurrentHint(int round, Language language) {
-    if (language == Language.turkish) {
+    /* if (language == Language.turkish) {
       currentHint = wordsRelationList[round].hint.toString() +
           " ile ilgili " +
           wordsRelationList[round].totalCount.toString() +
@@ -48,10 +47,18 @@ abstract class _BoardBase with Store {
           " cards that relate to the clue \"" +
           wordsRelationList[round].hint.toString() +
           "\":";
-    }
+    }*/
+    currentHint = wordsRelationList[round].hint.toString();
   }
 
   String getCurrentHint() {
     return currentHint;
+  }
+
+  void clearData() {
+    statusOfCards = {};
+    allWords = [];
+    wordsRelationList = [];
+    currentHint = "";
   }
 }

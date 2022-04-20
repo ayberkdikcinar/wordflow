@@ -11,6 +11,16 @@ abstract class  LocaleKeys {
   static const musicVolume = 'musicVolume';
   static const sfxVolume = 'sfxVolume';
   static const gameLanguage = 'gameLanguage';
+  static const singlePlayer = 'singlePlayer';
+  static const multiPlayer = 'multiPlayer';
+  static const mainMenu = 'mainMenu';
   static const darkMode = 'darkMode';
+  static const willPopScope = 'willPopScope';
+  static const inQueue = 'inQueue';
+  static const cancel = 'cancel';
+  static const score = 'score';
+  static const gameDropped = 'gameDropped';
+  static const gameFinished = 'gameFinished';
+  static const gameDropError = 'gameDropError';
 
 }

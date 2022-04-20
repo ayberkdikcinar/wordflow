@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordflow/core/components/customButton.dart';
+import 'package:wordflow/core/extensions/string_extension.dart';
+import 'package:wordflow/core/init/language/locale_keys.g.dart';
 
-import '../game/single/game_single_view.dart';
 import 'menu_viewmodel.dart';
 
 class GameModView extends StatelessWidget {
@@ -19,22 +20,22 @@ class GameModView extends StatelessWidget {
               context.read<MenuViewModel>().changeStatus(MenuState.singlePlayer);
             },
             height: 0.08,
-            width: 0.5,
-            text: 'SINGLE PLAYER'),
+            width: 0.7,
+            text: LocaleKeys.singlePlayer.locale),
         CustomButton(
             height: 0.08,
-            width: 0.5,
+            width: 0.7,
             click: () {
               context.read<MenuViewModel>().changeStatus(MenuState.multiPlayer);
             },
-            text: 'MULTI PLAYER'),
+            text: LocaleKeys.multiPlayer.locale),
         CustomButton(
             height: 0.08,
-            width: 0.5,
+            width: 0.7,
             click: () {
               context.read<MenuViewModel>().changeStatus(MenuState.main);
             },
-            text: 'MAIN MENU'),
+            text: LocaleKeys.mainMenu.locale),
       ],
     ));
   }
