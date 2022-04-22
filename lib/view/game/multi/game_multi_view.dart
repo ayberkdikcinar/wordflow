@@ -8,6 +8,7 @@ import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/core/components/gameFinishedCard.dart';
 import 'package:wordflow/core/components/text/hintText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
+import 'package:wordflow/view/animeted.dart';
 import 'package:wordflow/view/game/multi/inqueue_view.dart';
 
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
@@ -45,12 +46,14 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
           fit: StackFit.expand,
           children: [
             if (gameViewModel.gameStatus == GameStatus.initializing) InQueueView(model: gameViewModel),
-            if (gameViewModel.gameStatus == GameStatus.started || gameViewModel.gameStatus == GameStatus.stopped)
+            if (gameViewModel.gameStatus == GameStatus.started ||
+                gameViewModel.gameStatus == GameStatus.stopped ||
+                gameViewModel.gameStatus == GameStatus.finished)
               Stack(
                 fit: StackFit.expand,
                 children: [
                   Container(
-                    color: Colors.orange,
+                    color: const Color.fromARGB(255, 34, 40, 49),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,39 +61,80 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                         Expanded(
                           flex: 1,
                           child: Container(
-                            color: Colors.black26,
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.arrow_back_outlined, size: 30),
-                                  onPressed: () {
-                                    gameViewModel.handleDisconnect('data');
-                                    context.read<MenuViewModel>().changeStatus(MenuState.main);
-                                  },
+                            alignment: Alignment.topLeft,
+                            child: InkWell(
+                              child: Padding(
+                                padding: EdgeInsets.all(context.lowPadding),
+                                child: const Image(
+                                  image: AssetImage('assets/icons/close_rect.png'),
                                 ),
-                                const Text('Main menu'),
-                              ],
+                              ),
+                              onTap: () {
+                                gameViewModel.handleDisconnect('data');
+                                context.read<MenuViewModel>().changeStatus(MenuState.main);
+                              },
                             ),
                           ),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
-                              const Expanded(
+                              Expanded(
+                                  flex: 2,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(context.lowPadding),
+                                    child: Anim(title: 'a', vm: gameViewModel),
+                                  )),
+                              Expanded(
                                   flex: 1,
                                   child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('Find 3 words related with the given clue;'),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      gameViewModel.turnText(),
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
                                   )),
-                              Expanded(flex: 2, child: hintTextWithPadding()),
+                              Expanded(
+                                  flex: 2,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                          children: [
+                                            const Expanded(flex: 1, child: Text('YOU')),
+                                            Expanded(flex: 1, child: Text(gameViewModel.player.getScore.toString())),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          children: [
+                                            Expanded(flex: 1, child: hintTextWithPadding()),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                          children: [
+                                            const Expanded(flex: 1, child: Text('OPPONENT')),
+                                            Expanded(flex: 1, child: Text(gameViewModel.opponentScore.toString())),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )),
                             ],
                           ),
                         ),
                         Expanded(
                           flex: 10,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(context.normalPadding),
                             child: boardCards(),
                           ),
                         )
@@ -112,22 +156,24 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                             }),
                       )),
                     ),
+                  if (gameViewModel.gameStatus == GameStatus.finished)
+                    Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: Center(
+                          child: Padding(
+                        padding: EdgeInsets.all(context.highPadding),
+                        child: GameFinishedCard(
+                            score: gameViewModel.player.getScore,
+                            opponentScore: gameViewModel.opponentScore,
+                            continueClick: () {},
+                            retryClick: () {},
+                            homeClick: () {
+                              gameViewModel.handleDisconnect('data');
+                              context.read<MenuViewModel>().changeStatus(MenuState.main);
+                            }),
+                      )),
+                    ),
                 ],
-              ),
-            if (gameViewModel.gameStatus == GameStatus.finished)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(context.highPadding),
-                  child: GameFinishedCard(
-                      continueClick: () {},
-                      retryClick: () {},
-                      homeClick: () {
-                        //gameViewModel.changeGameStatus();
-                        context.read<MenuViewModel>().changeStatus(MenuState.main);
-                      }),
-                )),
               ),
           ],
         );
@@ -144,7 +190,7 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
   }
 
   GridView boardCards() {
-    double cardWidth = context.dynamicWidth(0.4);
+    double cardWidth = context.dynamicWidth(0.42);
     double cardHeight = context.dynamicHeight(0.108);
     return GridView.count(
       primary: false,
@@ -154,12 +200,15 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
 
       //mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        for (var i = 0; i < gameViewModel.cardListStatus.length; i++)
+        for (var i = 0; i < gameViewModel.cardStatusList.length; i++)
           Padding(
             padding: EdgeInsets.all(context.extraLowPadding),
             child: AnimatedCard(
+              whoClickedplayerId: gameViewModel.cardStatusList[i].playerId,
+              currentPlayerId: gameViewModel.socket.id.toString(),
               isMultiplayer: true,
-              cardStatus: gameViewModel.cardListStatus[gameViewModel.board.allWords[i]]!,
+              cardStatus:
+                  gameViewModel.cardStatusList[i].status!, //gameViewModel.cardListStatus[gameViewModel.board.allWords[i]]!,
               text: gameViewModel.board.allWords[i],
               onClickCallBack: (String text) {
                 ClickResponse response = gameViewModel.cardClicked(text);

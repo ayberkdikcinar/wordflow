@@ -2,7 +2,6 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:wordflow/core/components/text/cardText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +14,8 @@ class AnimatedCard extends StatefulWidget {
   final int cardStatus;
   final bool isMultiplayer;
   final String text;
+  final String whoClickedplayerId;
+  final String currentPlayerId;
   const AnimatedCard({
     Key? key,
     required this.text,
@@ -22,6 +23,8 @@ class AnimatedCard extends StatefulWidget {
     this.isRotated = false,
     this.cardStatus = 0,
     this.isMultiplayer = false,
+    this.whoClickedplayerId = '0',
+    this.currentPlayerId = '0',
   }) : super(key: key);
   final Function(String text)? onClickCallBack;
   @override
@@ -50,7 +53,11 @@ class _AnimatedCardState extends State<AnimatedCard> {
         backColor = Colors.grey;
         changeAngleOfCard(false);
       } else if (cardStatus == 1) {
-        backColor = Colors.blue.shade700;
+        if (widget.currentPlayerId != widget.whoClickedplayerId) {
+          backColor = Colors.red;
+        } else {
+          backColor = Colors.blue.shade700;
+        }
         changeAngleOfCard(true);
       }
     }
@@ -106,36 +113,23 @@ class _AnimatedCardState extends State<AnimatedCard> {
                             text: widget.text,
                             color: Colors.white,
                           ),
-                          SvgPicture.asset(backColor == Colors.blue.shade700 ? 'assets/icons/happy.svg' : 'assets/icons/sad.svg',
-                              width: 25, height: 25)
+                          SvgPicture.asset(
+                              backColor == Colors.blue.shade700 || backColor == Colors.red
+                                  ? 'assets/icons/happy.svg'
+                                  : 'assets/icons/sad.svg',
+                              width: 25,
+                              height: 25)
                         ],
                       ),
                     )
                   : Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(context.lowRadius), color: Color.fromARGB(255, 205, 201, 195),
+                        borderRadius: BorderRadius.circular(context.lowRadius),
+                        color: Color.fromARGB(255, 205, 201, 195),
                         border: Border.all(color: Color.fromARGB(255, 162, 178, 159), width: 3),
-
-                        //image: DecorationImage(image: AssetImage(backImagePath), fit: BoxFit.fill),
                       ),
                       child: Center(child: CardText(text: widget.text)),
-                    ) /*Stack(
-                    alignment: Alignment.center,
-                    fit: StackFit.expand,
-                    children: [
-                      const Image(
-                        fit: BoxFit.fill,
-                        image: AssetImage('assets/cards/front.png'),
-                      ),
-                      Positioned(
-                          bottom: context.dynamicHeight(0.02),
-                          child: SizedBox(
-                              height: context.dynamicHeight(0.036),
-                              width: context.dynamicWidth(0.26),
-                              child: Center(child: CardText(text: widget.text))))
-                    ],
-                  ),*/
-              ),
+                    )),
         );
       },
     );

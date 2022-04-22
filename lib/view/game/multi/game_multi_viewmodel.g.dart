@@ -24,19 +24,19 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
     });
   }
 
-  final _$cardListStatusAtom =
-      Atom(name: '_GameMultiViewModelBase.cardListStatus');
+  final _$cardStatusListAtom =
+      Atom(name: '_GameMultiViewModelBase.cardStatusList');
 
   @override
-  Map<String, int> get cardListStatus {
-    _$cardListStatusAtom.reportRead();
-    return super.cardListStatus;
+  List<CardStatus> get cardStatusList {
+    _$cardStatusListAtom.reportRead();
+    return super.cardStatusList;
   }
 
   @override
-  set cardListStatus(Map<String, int> value) {
-    _$cardListStatusAtom.reportWrite(value, super.cardListStatus, () {
-      super.cardListStatus = value;
+  set cardStatusList(List<CardStatus> value) {
+    _$cardStatusListAtom.reportWrite(value, super.cardStatusList, () {
+      super.cardStatusList = value;
     });
   }
 
@@ -83,6 +83,22 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
   set gameStatus(GameStatus value) {
     _$gameStatusAtom.reportWrite(value, super.gameStatus, () {
       super.gameStatus = value;
+    });
+  }
+
+  final _$opponentScoreAtom =
+      Atom(name: '_GameMultiViewModelBase.opponentScore');
+
+  @override
+  int get opponentScore {
+    _$opponentScoreAtom.reportRead();
+    return super.opponentScore;
+  }
+
+  @override
+  set opponentScore(int value) {
+    _$opponentScoreAtom.reportWrite(value, super.opponentScore, () {
+      super.opponentScore = value;
     });
   }
 
@@ -186,6 +202,17 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
   }
 
   @override
+  String turnText() {
+    final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
+        name: '_GameMultiViewModelBase.turnText');
+    try {
+      return super.turnText();
+    } finally {
+      _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void getModelAndFillData() {
     final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
         name: '_GameMultiViewModelBase.getModelAndFillData');
@@ -208,11 +235,22 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
   }
 
   @override
-  ClickResponse isWordTrue(String clickedWord) {
+  ClickResponse checkTheCorrectnessOfWord(String clickedWord) {
     final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
-        name: '_GameMultiViewModelBase.isWordTrue');
+        name: '_GameMultiViewModelBase.checkTheCorrectnessOfWord');
     try {
-      return super.isWordTrue(clickedWord);
+      return super.checkTheCorrectnessOfWord(clickedWord);
+    } finally {
+      _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void changeTurn() {
+    final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
+        name: '_GameMultiViewModelBase.changeTurn');
+    try {
+      return super.changeTurn();
     } finally {
       _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
     }
@@ -244,10 +282,11 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
   String toString() {
     return '''
 board: ${board},
-cardListStatus: ${cardListStatus},
+cardStatusList: ${cardStatusList},
 round: ${round},
 trueWordCount: ${trueWordCount},
 gameStatus: ${gameStatus},
+opponentScore: ${opponentScore},
 isReferee: ${isReferee},
 playingPlayerId: ${playingPlayerId},
 whoPlaysForNextHint: ${whoPlaysForNextHint},

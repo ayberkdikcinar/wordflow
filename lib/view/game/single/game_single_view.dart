@@ -99,6 +99,7 @@ class _GameViewState extends BaseState<GameView> {
                     child: Padding(
                   padding: EdgeInsets.all(context.highPadding),
                   child: GameFinishedCard(
+                      score: gameViewModel.player.getScore,
                       continueClick: () {},
                       retryClick: () {
                         context.read<MenuViewModel>().changeStatus(MenuState.play);

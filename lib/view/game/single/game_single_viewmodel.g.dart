@@ -111,11 +111,11 @@ mixin _$GameSingleViewModel on _GameSingleViewModelBase, Store {
   }
 
   @override
-  ClickResponse isWordTrue(String clickedWord) {
+  ClickResponse checkTheCorrectnessOfWord(String clickedWord) {
     final _$actionInfo = _$_GameSingleViewModelBaseActionController.startAction(
-        name: '_GameSingleViewModelBase.isWordTrue');
+        name: '_GameSingleViewModelBase.checkTheCorrectnessOfWord');
     try {
-      return super.isWordTrue(clickedWord);
+      return super.checkTheCorrectnessOfWord(clickedWord);
     } finally {
       _$_GameSingleViewModelBaseActionController.endAction(_$actionInfo);
     }

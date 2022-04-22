@@ -8,12 +8,18 @@ import 'package:wordflow/core/init/language/locale_keys.g.dart';
 
 class GameFinishedCard extends StatefulWidget {
   const GameFinishedCard(
-      {Key? key, required this.continueClick, required this.retryClick, required this.homeClick, this.score = 0})
+      {Key? key,
+      required this.continueClick,
+      required this.retryClick,
+      required this.homeClick,
+      this.score = 0,
+      this.opponentScore = -999})
       : super(key: key);
   final Function continueClick;
   final Function retryClick;
   final Function homeClick;
   final int score;
+  final int opponentScore;
   @override
   State<GameFinishedCard> createState() => _GameFinishedCardState();
 }
@@ -39,9 +45,22 @@ class _GameFinishedCardState extends State<GameFinishedCard> {
             top: cardHeight * 0.2,
             left: cardHeight * 0.33,
           ),
+          if (widget.opponentScore != -999)
+            Positioned(
+              child: Text(
+                widget.score > widget.opponentScore
+                    ? 'YOU WON'
+                    : widget.score == widget.opponentScore
+                        ? 'DRAW'
+                        : 'YOU LOST',
+                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              top: cardHeight * 0.35,
+              left: cardHeight * 0.33,
+            ),
           Positioned(
             child: Text(
-              '${LocaleKeys.gameFinished.locale}: ${widget.score}',
+              '${LocaleKeys.score.locale.toUpperCase()}: ${widget.score}',
               style: TextStyle(color: context.defaultTextColor),
             ),
             top: cardHeight * 0.75,

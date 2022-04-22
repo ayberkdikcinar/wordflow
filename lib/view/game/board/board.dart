@@ -1,3 +1,4 @@
+import 'package:wordflow/view/cardStatus_model.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 
@@ -9,7 +10,7 @@ class Board = _BoardBase with _$Board;
 abstract class _BoardBase with Store {
   List<WordsRelation> wordsRelationList = [];
   List<String> allWords = [];
-  Map<String, int> statusOfCards = {}; //0 means not clicked, 1 means clicked and true. 2 means clicked and false.
+  List<CardStatus> statusOfCards = []; //0 means not clicked, 1 means clicked and true. 2 means clicked and false.
 
   @observable
   String currentHint = "";
@@ -21,7 +22,7 @@ abstract class _BoardBase with Store {
   void applyRandomness() {
     randomize();
     for (var item in allWords) {
-      statusOfCards.addAll({item: 0});
+      statusOfCards.add(CardStatus(word: item, status: 0));
     }
   }
 
@@ -56,7 +57,7 @@ abstract class _BoardBase with Store {
   }
 
   void clearData() {
-    statusOfCards = {};
+    statusOfCards = [];
     allWords = [];
     wordsRelationList = [];
     currentHint = "";

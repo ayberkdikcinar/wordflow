@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 
@@ -8,7 +10,7 @@ class HintText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      height: context.dynamicHeight(0.2),
+      height: context.dynamicHeight(0.15),
       width: context.dynamicWidth(0.4),
       decoration: BoxDecoration(border: Border.all(color: Colors.white), color: Colors.black),
       child: Text(
@@ -18,3 +20,5 @@ class HintText extends StatelessWidget {
     );
   }
 }
+
+/**/ 

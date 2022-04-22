@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:wordflow/core/base/model/base_gameviewmodel.dart';
 import 'package:wordflow/view/game/board/board.dart';
 import 'package:wordflow/view/player/player.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
@@ -14,7 +15,7 @@ enum ClickResponse { wordIsTrue, wordIsFalse, notYourTurn }
 
 class GameSingleViewModel = _GameSingleViewModelBase with _$GameSingleViewModel;
 
-abstract class _GameSingleViewModelBase with Store {
+abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
   late BuildContext context;
 
   @observable
@@ -33,6 +34,7 @@ abstract class _GameSingleViewModelBase with Store {
   Board board = Board();
   Player player = Player("Ayberk");
 
+  @override
   @action
   void getModelAndFillData() {
     board.clearData();
@@ -129,12 +131,13 @@ abstract class _GameSingleViewModelBase with Store {
     board.applyRandomness();
   } //yes
 
+  @override
   @action
   ClickResponse cardClicked(String cardText) {
     ///hinti burda değiştiriyorum, oyunu burada bitiriyorum, textin doğruluğunu burada yapıyorum
     clickCount++;
 
-    ClickResponse response = isWordTrue(cardText);
+    ClickResponse response = checkTheCorrectnessOfWord(cardText);
 
     if (clickCount == board.allWords.length) {
       gameStatus = GameStatus.finished;
@@ -160,8 +163,9 @@ abstract class _GameSingleViewModelBase with Store {
     return response;
   }
 
+  @override
   @action
-  ClickResponse isWordTrue(String clickedWord) {
+  ClickResponse checkTheCorrectnessOfWord(String clickedWord) {
     try {
       if (board.wordsRelationList[round].relatedWords!.contains(clickedWord)) {
         player.setScore(player.getScore + 10);
@@ -181,6 +185,7 @@ abstract class _GameSingleViewModelBase with Store {
     }
   }
 
+  @override
   Language currentGameLanguage() {
     return context.read<SettingsViewModel>().gameLanguage;
   }
