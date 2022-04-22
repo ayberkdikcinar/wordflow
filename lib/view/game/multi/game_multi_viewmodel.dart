@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter/cupertino.dart';
@@ -246,6 +247,11 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
         trueWordCount++;
         if (trueWordCount % 3 == 0 && trueWordCount != 0 && trueWordCount < board.allWords.length) {
           round++;
+          if (context.read<SettingsViewModel>().sfxState) {
+            AudioCache soundPlayer = AudioCache();
+            soundPlayer.play("sounds/word_changed.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+          }
+
           board.setCurrentHint(round, currentGameLanguage());
           debugPrint('playing:' + playingPlayerId);
           debugPrint('whoWillPlaynextHint' + whoPlaysForNextHint);

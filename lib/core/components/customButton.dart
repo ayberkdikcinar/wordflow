@@ -1,6 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
+
+import '../../view/settings/settings_viewmodel.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({Key? key, required this.click, required this.text, this.height = 0.07, this.width = 0.4}) : super(key: key);
@@ -13,9 +16,12 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AudioCache soundPlayer = AudioCache();
 
-    return GestureDetector(
+    return InkWell(
+      enableFeedback: false,
       onTap: () async {
-        soundPlayer.play("sounds/btn-click.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+        if (context.read<SettingsViewModel>().sfxState) {
+          soundPlayer.play("sounds/btn-click.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+        }
         click();
       },
       child: Padding(

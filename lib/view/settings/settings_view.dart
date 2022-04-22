@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordflow/core/components/switchButton.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 import 'package:wordflow/core/extensions/string_extension.dart';
 import 'package:wordflow/core/init/language/locale_keys.g.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 
 import '../../core/components/positionedIcon.dart';
-import '../../core/init/theme/theme_manager.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({Key? key, required this.closeClick}) : super(key: key);
@@ -18,35 +16,37 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   bool stateCheckBox = false;
-  bool stateCheckBox2 = false;
   String dropdownValue = LocaleKeys.english.locale;
-  String dropdownValue2 = LocaleKeys.turkish.locale;
 
   @override
   Widget build(BuildContext context) {
+    bool sfxCheckBox = context.read<SettingsViewModel>().sfxState;
     return SizedBox(
-      height: context.dynamicHeight(0.5),
+      height: context.dynamicWidth(0.8),
+      width: context.dynamicWidth(0.8),
       child: Stack(
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         children: [
-          Image(
-            image: const AssetImage("assets/cards/pop-up-background.png"),
-            fit: BoxFit.fill,
-            height: context.dynamicHeight(0.48),
+          const Image(
+            image: AssetImage("assets/cards/pop-up-background.png"),
           ),
           Positioned(
-            left: context.dynamicWidth(0.34),
-            top: context.dynamicHeight(0.02),
-            child: Text(LocaleKeys.menuOptions.locale,
-                style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.extraHighTextSize)),
+            left: context.dynamicWidth(0.2),
+            top: context.dynamicWidth(0.08),
+            child: Container(
+              height: context.dynamicWidth(0.1),
+              width: context.dynamicWidth(0.4),
+              alignment: Alignment.center,
+              child: Text(LocaleKeys.menuOptions.locale,
+                  style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.extraHighTextSize)),
+            ),
           ),
           Padding(
-            padding:
-                EdgeInsets.only(left: context.extraHighPadding, right: context.extraHighPadding, top: context.extraHighPadding),
+            padding: EdgeInsets.only(left: context.extraHighPadding, right: context.highPadding, top: context.extraHighPadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
+                /*Row(
                   children: [
                     Expanded(
                         flex: 2,
@@ -56,15 +56,15 @@ class _SettingsViewState extends State<SettingsView> {
                       child: musicCheckBoxButton(),
                     )
                   ],
-                ),
+                ),*/
                 Row(
                   children: [
                     Expanded(
                         flex: 2,
                         child: Text(LocaleKeys.sfxVolume.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.red))),
+                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
                     Expanded(
-                      child: sfxCheckBoxButton(),
+                      child: sfxCheckBoxButton(sfxCheckBox),
                     )
                   ],
                 ),
@@ -73,26 +73,10 @@ class _SettingsViewState extends State<SettingsView> {
                     Expanded(
                         flex: 2,
                         child: Text(LocaleKeys.gameLanguage.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.red))),
+                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
                     Expanded(
+                      flex: 1,
                       child: languageDropDownButton(context),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        flex: 2,
-                        child: Text(LocaleKeys.darkMode.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.red))),
-                    Expanded(
-                      child: MenuSwitchButton(
-                        icon: Icons.dangerous,
-                        title: '',
-                        onPressed: (val) {
-                          context.read<ThemeManager>().changeDarkMode(val);
-                        },
-                      ),
                     )
                   ],
                 ),
@@ -101,8 +85,8 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           PositionedIcon(
               context: context,
-              bottom: 0,
-              left: context.dynamicWidth(0.4),
+              bottom: context.dynamicWidth(0.04),
+              left: context.dynamicWidth(0.34),
               imagePath: "assets/icons/close.png",
               onTap: () {
                 widget.closeClick();
@@ -114,35 +98,32 @@ class _SettingsViewState extends State<SettingsView> {
 
   DropdownButton<String> languageDropDownButton(BuildContext context) {
     return DropdownButton<String>(
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_downward),
+      value: context.read<SettingsViewModel>().gameLanguage == Language.english
+          ? LocaleKeys.english.locale
+          : LocaleKeys.turkish.locale,
+      icon: const Icon(Icons.arrow_downward, color: Colors.white),
       style: TextStyle(color: Colors.white, fontSize: context.normalIconSize),
-      underline: Container(
-        height: 2,
-        color: Colors.red,
-      ),
+      underline: const SizedBox(),
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;
-          if (newValue == "İngilizce" || newValue == "English") {
+          if (newValue == LocaleKeys.english.locale) {
             context.read<SettingsViewModel>().changeGameLanguage(Language.english);
-            debugPrint(context.read<SettingsViewModel>().gameLanguage.toString());
           } else {
             context.read<SettingsViewModel>().changeGameLanguage(Language.turkish);
-            debugPrint(context.read<SettingsViewModel>().gameLanguage.toString());
           }
         });
       },
       items: <String>[LocaleKeys.english.locale, LocaleKeys.turkish.locale].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Text(value, style: TextStyle(fontSize: context.highTextSize, fontWeight: FontWeight.bold)),
         );
       }).toList(),
     );
   }
 
-  IconButton musicCheckBoxButton() {
+  /*IconButton musicCheckBoxButton() {
     return IconButton(
       onPressed: () {
         debugPrint('runned');
@@ -154,19 +135,18 @@ class _SettingsViewState extends State<SettingsView> {
       color: Colors.white,
       iconSize: 30,
     );
-  }
+  }*/
 
-  IconButton sfxCheckBoxButton() {
+  IconButton sfxCheckBoxButton(bool state) {
     return IconButton(
       onPressed: () {
-        debugPrint('runned');
         setState(() {
-          stateCheckBox2 = !stateCheckBox2;
+          context.read<SettingsViewModel>().changeSFXState(!state);
         });
       },
-      icon: stateCheckBox2 ? const Icon(Icons.check_box) : const Icon(Icons.check_box_outline_blank),
+      icon: state ? const Icon(Icons.check_box) : const Icon(Icons.check_box_outline_blank),
       color: Colors.white,
-      iconSize: 30,
+      iconSize: context.extraHighIconSize,
     );
   }
 }

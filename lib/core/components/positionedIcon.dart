@@ -1,5 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
+import 'package:wordflow/view/settings/settings_viewmodel.dart';
 
 class PositionedIcon extends StatelessWidget {
   const PositionedIcon({
@@ -22,8 +25,12 @@ class PositionedIcon extends StatelessWidget {
     return Positioned(
       bottom: bottom,
       left: left,
-      child: GestureDetector(
-        onTap: () {
+      child: InkWell(
+        onTap: () async {
+          if (context.read<SettingsViewModel>().sfxState) {
+            AudioCache soundPlayer = AudioCache();
+            soundPlayer.play("sounds/btn-click.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+          }
           onTap();
         },
         child: SizedBox(

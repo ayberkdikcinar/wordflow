@@ -11,6 +11,7 @@ import 'package:wordflow/core/extensions/string_extension.dart';
 
 import 'package:wordflow/view/game/multi/game_multi_view.dart';
 import 'package:wordflow/view/game/single/game_single_view.dart';
+import 'package:wordflow/view/menu/help_view.dart';
 
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
 import 'package:wordflow/view/settings/settings_view.dart';
@@ -27,9 +28,11 @@ class MenuView extends StatefulWidget {
 
 class _MenuViewState extends State<MenuView> {
   DateTime? timeBackPressed;
+
   @override
   Widget build(BuildContext context) {
     MenuState menuState = context.watch<MenuViewModel>().currentMenuState;
+    //AudioCache soundPlayer = AudioCache();
 
     return WillPopScope(
       onWillPop: () async {
@@ -79,7 +82,7 @@ class _MenuViewState extends State<MenuView> {
             text: LocaleKeys.menuOptions.locale),
         CustomButton(
             click: () {
-              debugPrint('help clicked');
+              context.read<MenuViewModel>().changeStatus(MenuState.help);
             },
             text: LocaleKeys.menuHelp.locale),
         CustomButton(
@@ -103,6 +106,8 @@ class _MenuViewState extends State<MenuView> {
         return const GameView();
       case MenuState.multiPlayer:
         return const GameMultiView();
+      case MenuState.help:
+        return const HelpView();
       case MenuState.options:
         return Padding(
           padding: EdgeInsets.all(context.highPadding),
@@ -118,4 +123,9 @@ class _MenuViewState extends State<MenuView> {
         return const Text("Error");
     }
   }
+
+  /*play() async {
+    AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+    await audioPlayer.play("assets/sounds/menu_music.wav", isLocal: true, stayAwake: false);
+  }*/
 }

@@ -24,10 +24,10 @@ extension ContextExtension on BuildContext {
   double get highRadius => MediaQuery.of(this).size.height * 0.02;
   double get extraHighRadius => MediaQuery.of(this).size.height * 0.025;
 
-  double get extraLowIconSize => MediaQuery.of(this).size.height * 0.05;
+  double get extraLowIconSize => MediaQuery.of(this).size.height * 0.015;
   double get normalIconSize => MediaQuery.of(this).size.height * 0.025;
   double get highIconSize => MediaQuery.of(this).size.height * 0.03;
-  double get extraHighIconSize => MediaQuery.of(this).size.height * 0.04;
+  double get extraHighIconSize => MediaQuery.of(this).size.height * 0.05;
   double get fabSize => MediaQuery.of(this).size.height * 0.07;
 
   ThemeData get theme => Theme.of(this);

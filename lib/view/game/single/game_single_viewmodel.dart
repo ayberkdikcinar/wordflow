@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -144,10 +145,18 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
       clickCount = 0;
       round = 0;
     } else {
+      bool isRoundChange = false;
       while (int.parse(board.wordsRelationList[round].totalCount!) == 0) {
         round++;
+        isRoundChange = true;
       }
-      board.setCurrentHint(round, currentGameLanguage());
+      if (isRoundChange) {
+        if (context.read<SettingsViewModel>().sfxState) {
+          AudioCache soundPlayer = AudioCache();
+          soundPlayer.play("sounds/word_changed.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+        }
+        board.setCurrentHint(round, currentGameLanguage());
+      }
     }
 
     /* if (clickCount == int.parse(board.wordsRelationList[round].totalCount!)) {

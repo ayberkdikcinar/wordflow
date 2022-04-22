@@ -1,10 +1,13 @@
 // ignore_for_file: file_names
 
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wordflow/core/components/text/cardText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wordflow/view/settings/settings_viewmodel.dart';
 import '../../view/game/single/game_single_viewmodel.dart';
 
 enum CardFace { back, front }
@@ -38,6 +41,7 @@ class _AnimatedCardState extends State<AnimatedCard> {
   Color backColor = Colors.blue.shade700;
   bool isRotated = false; //widget.isRotated;
   int cardStatus = 0;
+  AudioCache soundPlayer = AudioCache();
   @override
   void initState() {
     isRotated = widget.isRotated;
@@ -78,14 +82,21 @@ class _AnimatedCardState extends State<AnimatedCard> {
 
           // ignore: sized_box_for_whitespace
           child: InkWell(
+              enableFeedback: false,
               onTap: () async {
                 if (widget.onClickCallBack != null && !isClickedOnce) {
                   ClickResponse response = await widget.onClickCallBack!(widget.text);
                   if (response == ClickResponse.wordIsTrue) {
+                    if (context.read<SettingsViewModel>().sfxState) {
+                      soundPlayer.play("sounds/wordIsTrue.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+                    }
                     cardStatus = 1;
                     backColor = Colors.blue.shade700;
                     changeAngleOfCard(true);
                   } else if (response == ClickResponse.wordIsFalse) {
+                    if (context.read<SettingsViewModel>().sfxState) {
+                      soundPlayer.play("sounds/wordIsFalse.mp3", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+                    }
                     cardStatus = 2;
                     backColor = Colors.grey;
                     changeAngleOfCard(false);
