@@ -38,20 +38,6 @@ class _InQueueViewState extends State<InQueueView> {
         SizedBox(
           height: context.dynamicHeight(0.03),
         ),
-        /*TextButton(
-            onPressed: () {
-              context.read<MenuViewModel>().changeStatus(MenuState.main);
-            },
-            child: const Text(
-              'CANCEL',
-              style: TextStyle(color: Colors.white),
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.red),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-              ),
-            )),*/
         CustomButton(
           height: 0.06,
           width: 0.4,

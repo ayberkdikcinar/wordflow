@@ -15,28 +15,40 @@ class GameModView extends StatelessWidget {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CustomButton(
-            click: () {
-              context.read<MenuViewModel>().changeStatus(MenuState.singlePlayer);
-            },
-            height: 0.08,
-            width: 0.7,
-            text: LocaleKeys.singlePlayer.locale),
-        CustomButton(
-            height: 0.08,
-            width: 0.7,
-            click: () {
-              context.read<MenuViewModel>().changeStatus(MenuState.multiPlayer);
-            },
-            text: LocaleKeys.multiPlayer.locale),
-        CustomButton(
-            height: 0.08,
-            width: 0.7,
-            click: () {
-              context.read<MenuViewModel>().changeStatus(MenuState.main);
-            },
-            text: LocaleKeys.mainMenu.locale),
+        singlePlayerButton(context),
+        multiplayerButton(context),
+        mainMenuButton(context),
       ],
     ));
+  }
+
+  CustomButton mainMenuButton(BuildContext context) {
+    return CustomButton(
+        height: 0.08,
+        width: 0.7,
+        click: () {
+          context.read<MenuViewModel>().changeStatus(MenuState.main);
+        },
+        text: LocaleKeys.mainMenu.locale);
+  }
+
+  CustomButton singlePlayerButton(BuildContext context) {
+    return CustomButton(
+        click: () {
+          context.read<MenuViewModel>().changeStatus(MenuState.singlePlayer);
+        },
+        height: 0.08,
+        width: 0.7,
+        text: LocaleKeys.singlePlayer.locale);
+  }
+
+  CustomButton multiplayerButton(BuildContext context) {
+    return CustomButton(
+        height: 0.08,
+        width: 0.7,
+        click: () {
+          context.read<MenuViewModel>().changeStatus(MenuState.multiPlayer);
+        },
+        text: LocaleKeys.multiPlayer.locale);
   }
 }

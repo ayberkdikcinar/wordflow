@@ -9,6 +9,7 @@ import 'package:wordflow/view/cardStatus_model.dart';
 import 'package:wordflow/view/player/player.dart';
 // ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 
 import '../../settings/settings_viewmodel.dart';
 import '../board/board.dart';
@@ -56,9 +57,12 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
   @observable
   List<String> readyPlayerIds = [];
 
+  AudioCache soundPlayer = AudioCache();
   @action
   void socketConnect() {
-    socket = IO.io("http://192.168.1.5:3000", <String, dynamic>{
+    //http://192.168.1.5:3000
+    //https://wordflow-socket-server.herokuapp.com/
+    socket = IO.io("https://wordflow-socket-server.herokuapp.com/", <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -77,6 +81,10 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
       });
       socket.on("hintChange", (id) {
         whoPlaysForNextHint = id;
+
+        if (context.read<SettingsViewModel>().sfxState) {
+          soundPlayer.play("sounds/word_changed.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
+        }
       });
       socket.on('mySocketId', (mess) {
         debugPrint('myId:' + mess.toString());
@@ -105,6 +113,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
       "allWords": board.allWords,
       "currentHint": board.getCurrentHint().toString(),
       "cardListStatus": board.statusOfCards,
+      "wordRelations": board.wordsRelationList,
     });
   }
 
@@ -173,32 +182,32 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
       var testDataEN = [
         {
           "hint": "country",
-          "relatedWords": ["Egypt", "France", "Turkey"],
+          "relatedWords": ["France", "Turkey", "Egypt"],
           "totalCount": "3"
         },
         {
-          "hint": "green",
-          "relatedWords": ["Dollar", "Alien", "Grey"],
+          "hint": "hallowen",
+          "relatedWords": ["Chocalate", "Pumpkin", "Ghost"],
           "totalCount": "3"
         },
         {
           "hint": "tennis",
-          "relatedWords": ["Racket", "Basketball", "Table"],
+          "relatedWords": ["Racket", "Court", "Table"],
           "totalCount": "3"
         },
         {
-          "hint": "tennis1",
-          "relatedWords": ["Racket1", "Basketball1", "Table1"],
+          "hint": "king",
+          "relatedWords": ["Throne", "Prensess", "Kingdom"],
           "totalCount": "3"
         },
         {
-          "hint": "tennis2",
-          "relatedWords": ["Racket2", "Basketball2", "Table2"],
+          "hint": "red",
+          "relatedWords": ["Ketchup", "Heart", "Laser"],
           "totalCount": "3"
         },
         {
-          "hint": "tennis3",
-          "relatedWords": ["Racket3", "Basketball3", "Table3"],
+          "hint": "tooth",
+          "relatedWords": ["Shark", "Root", "Brush"],
           "totalCount": "3"
         },
         {
@@ -235,11 +244,6 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
         cardStatusList[indexOfElement].status = 2;
         player.setScore(player.getScore - 2);
         changeTurn();
-        /*if (whoPlayed == 1) {
-          socket.emit("playingPlayerId", readyPlayerIds[0]);
-        } else {
-          socket.emit("playingPlayerId", readyPlayerIds[1]);
-        }*/
       } else {
         player.setScore(player.getScore + 10);
         cardStatusList[indexOfElement].status = 1;
@@ -247,11 +251,6 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
         trueWordCount++;
         if (trueWordCount % 3 == 0 && trueWordCount != 0 && trueWordCount < board.allWords.length) {
           round++;
-          if (context.read<SettingsViewModel>().sfxState) {
-            AudioCache soundPlayer = AudioCache();
-            soundPlayer.play("sounds/word_changed.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
-          }
-
           board.setCurrentHint(round, currentGameLanguage());
           debugPrint('playing:' + playingPlayerId);
           debugPrint('whoWillPlaynextHint' + whoPlaysForNextHint);
@@ -332,6 +331,8 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
     gameStatus = GameStatus.stopped;
     socket.clearListeners();
     socket.disconnect();
+
+    soundPlayer.play("sounds/disconnected.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
   }
 
   @action
@@ -348,9 +349,11 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
     readyPlayerIds.addAll(playerIdsData);
     playingPlayerId = readyPlayerIds[0].toString();
     whoPlaysForNextHint = readyPlayerIds[1].toString();
-    getModelAndFillData();
+
+    soundPlayer.play("sounds/connected.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
 
     if (isReferee) {
+      getModelAndFillData();
       loadBoardRandomly();
     }
     startGame();
@@ -359,11 +362,9 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
   void handleLoadGame(data) {
     final List<String> allWordsData = List.from(data['allWords']).map((e) => e as String).toList();
     board.allWords = allWordsData;
-
+    final List<WordsRelation> wordRelationsData = List.from(data['wordRelations']).map((e) => WordsRelation.fromJson(e)).toList();
     board.currentHint = data['currentHint'].toString();
-    //final Map<String, int> cardListStatusData = Map<String, int>.from(data['cardListStatus']);
-    //cardListStatus = cardListStatusData;
-
+    board.wordsRelationList = wordRelationsData;
     final List<CardStatus> cardStatData = data['cardListStatus'].map<CardStatus>((e) => CardStatus.fromJson(e)).toList();
     cardStatusList = cardStatData;
   }

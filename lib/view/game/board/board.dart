@@ -52,6 +52,10 @@ abstract class _BoardBase with Store {
     currentHint = wordsRelationList[round].hint.toString();
   }
 
+  List<WordsRelation> getRelations() {
+    return wordsRelationList;
+  }
+
   String getCurrentHint() {
     return currentHint;
   }

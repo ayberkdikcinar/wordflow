@@ -8,7 +8,7 @@ import 'package:wordflow/core/components/animatedCard.dart';
 import 'package:wordflow/core/components/gameFinishedCard.dart';
 import 'package:wordflow/core/components/text/hintText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
-import 'package:wordflow/view/animeted.dart';
+import 'package:wordflow/view/timerRound.dart';
 import 'package:wordflow/view/game/multi/inqueue_view.dart';
 
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
@@ -60,21 +60,7 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                       children: [
                         Expanded(
                           flex: 1,
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            child: InkWell(
-                              child: Padding(
-                                padding: EdgeInsets.all(context.lowPadding),
-                                child: const Image(
-                                  image: AssetImage('assets/icons/close_rect.png'),
-                                ),
-                              ),
-                              onTap: () {
-                                gameViewModel.handleDisconnect('data');
-                                context.read<MenuViewModel>().changeStatus(MenuState.main);
-                              },
-                            ),
-                          ),
+                          child: closeRectContainer(),
                         ),
                         Expanded(
                           flex: 3,
@@ -84,7 +70,7 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                                   flex: 2,
                                   child: Padding(
                                     padding: EdgeInsets.all(context.lowPadding),
-                                    child: Anim(title: 'a', vm: gameViewModel),
+                                    child: TimerRound(vm: gameViewModel),
                                   )),
                               Expanded(
                                   flex: 1,
@@ -95,39 +81,7 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                   )),
-                              Expanded(
-                                  flex: 2,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          children: [
-                                            const Expanded(flex: 1, child: Text('YOU')),
-                                            Expanded(flex: 1, child: Text(gameViewModel.player.getScore.toString())),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          children: [
-                                            Expanded(flex: 1, child: hintTextWithPadding()),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          children: [
-                                            const Expanded(flex: 1, child: Text('OPPONENT')),
-                                            Expanded(flex: 1, child: Text(gameViewModel.opponentScore.toString())),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )),
+                              Expanded(flex: 2, child: scoreAndHintRow()),
                             ],
                           ),
                         ),
@@ -141,43 +95,101 @@ class _GameMultiViewState extends BaseState<GameMultiView> {
                       ],
                     ),
                   ),
-                  if (gameViewModel.gameStatus == GameStatus.stopped)
-                    Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: Center(
-                          child: Padding(
-                        padding: EdgeInsets.all(context.highPadding),
-                        child: AlertCard(
-                            continueClick: () {},
-                            retryClick: () {},
-                            homeClick: () {
-                              //gameViewModel.changeGameStatus();
-                              context.read<MenuViewModel>().changeStatus(MenuState.main);
-                            }),
-                      )),
-                    ),
-                  if (gameViewModel.gameStatus == GameStatus.finished)
-                    Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: Center(
-                          child: Padding(
-                        padding: EdgeInsets.all(context.highPadding),
-                        child: GameFinishedCard(
-                            score: gameViewModel.player.getScore,
-                            opponentScore: gameViewModel.opponentScore,
-                            continueClick: () {},
-                            retryClick: () {},
-                            homeClick: () {
-                              gameViewModel.handleDisconnect('data');
-                              context.read<MenuViewModel>().changeStatus(MenuState.main);
-                            }),
-                      )),
-                    ),
+                  if (gameViewModel.gameStatus == GameStatus.stopped) gameStoppedContainer(),
+                  if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer(),
                 ],
               ),
           ],
         );
       });
+
+  Container gameStoppedContainer() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+          child: Padding(
+        padding: EdgeInsets.all(context.highPadding),
+        child: AlertCard(
+            continueClick: () {},
+            retryClick: () {},
+            homeClick: () {
+              //gameViewModel.changeGameStatus();
+              context.read<MenuViewModel>().changeStatus(MenuState.main);
+            }),
+      )),
+    );
+  }
+
+  Container gameFinishedContainer() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+          child: Padding(
+        padding: EdgeInsets.all(context.highPadding),
+        child: GameFinishedCard(
+            score: gameViewModel.player.getScore,
+            opponentScore: gameViewModel.opponentScore,
+            continueClick: () {},
+            retryClick: () {},
+            homeClick: () {
+              gameViewModel.handleDisconnect('data');
+              context.read<MenuViewModel>().changeStatus(MenuState.main);
+            }),
+      )),
+    );
+  }
+
+  Row scoreAndHintRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              const Expanded(flex: 1, child: Text('YOU')),
+              Expanded(flex: 1, child: Text(gameViewModel.player.getScore.toString())),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              Expanded(flex: 1, child: hintTextWithPadding()),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              const Expanded(flex: 1, child: Text('OPPONENT')),
+              Expanded(flex: 1, child: Text(gameViewModel.opponentScore.toString())),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Container closeRectContainer() {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: InkWell(
+        child: Padding(
+          padding: EdgeInsets.all(context.lowPadding),
+          child: const Image(
+            image: AssetImage('assets/icons/close_rect.png'),
+          ),
+        ),
+        onTap: () {
+          gameViewModel.handleDisconnect('data');
+          context.read<MenuViewModel>().changeStatus(MenuState.main);
+        },
+      ),
+    );
+  }
 
   Padding hintTextWithPadding() {
     return Padding(

@@ -2,16 +2,16 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:wordflow/view/game/multi/game_multi_viewmodel.dart';
 
-class Anim extends StatefulWidget {
-  const Anim({Key? key, this.title, required this.vm}) : super(key: key);
+class TimerRound extends StatefulWidget {
+  const TimerRound({Key? key, this.title, required this.vm}) : super(key: key);
 
   final String? title;
   final GameMultiViewModel vm;
   @override
-  _AnimState createState() => _AnimState();
+  _TimerRoundState createState() => _TimerRoundState();
 }
 
-class _AnimState extends State<Anim> {
+class _TimerRoundState extends State<TimerRound> {
   final int _duration = 200;
   final CountDownController _controller = CountDownController();
 

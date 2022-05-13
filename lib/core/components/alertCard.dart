@@ -33,7 +33,7 @@ class _AlertCardState extends State<AlertCard> {
           Positioned(
             child: Text(
               LocaleKeys.gameDropped.locale,
-              style: TextStyle(color: context.defaultTextColor, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             top: cardHeight * 0.06,
             left: cardHeight * 0.25,
@@ -41,7 +41,7 @@ class _AlertCardState extends State<AlertCard> {
           Positioned(
             child: Text(
               LocaleKeys.gameDropError.locale,
-              style: TextStyle(color: context.defaultTextColor),
+              style: const TextStyle(color: Colors.white),
             ),
             top: cardHeight * 0.4,
             left: cardHeight * 0.06,

@@ -46,53 +46,54 @@ class _SettingsViewState extends State<SettingsView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                /*Row(
-                  children: [
-                    Expanded(
-                        flex: 2,
-                        child: Text(LocaleKeys.musicVolume.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.red))),
-                    Expanded(
-                      child: musicCheckBoxButton(),
-                    )
-                  ],
-                ),*/
-                Row(
-                  children: [
-                    Expanded(
-                        flex: 2,
-                        child: Text(LocaleKeys.sfxVolume.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
-                    Expanded(
-                      child: sfxCheckBoxButton(sfxCheckBox),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        flex: 2,
-                        child: Text(LocaleKeys.gameLanguage.locale,
-                            style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
-                    Expanded(
-                      flex: 1,
-                      child: languageDropDownButton(context),
-                    )
-                  ],
-                ),
+                sfxVolumeRow(context, sfxCheckBox),
+                languageRow(context),
               ],
             ),
           ),
-          PositionedIcon(
-              context: context,
-              bottom: context.dynamicWidth(0.04),
-              left: context.dynamicWidth(0.34),
-              imagePath: "assets/icons/close.png",
-              onTap: () {
-                widget.closeClick();
-              })
+          closeIcon(context)
         ],
       ),
+    );
+  }
+
+  PositionedIcon closeIcon(BuildContext context) {
+    return PositionedIcon(
+        context: context,
+        bottom: context.dynamicWidth(0.04),
+        left: context.dynamicWidth(0.34),
+        imagePath: "assets/icons/close.png",
+        onTap: () {
+          widget.closeClick();
+        });
+  }
+
+  Row languageRow(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+            flex: 2,
+            child: Text(LocaleKeys.gameLanguage.locale,
+                style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
+        Expanded(
+          flex: 1,
+          child: languageDropDownButton(context),
+        )
+      ],
+    );
+  }
+
+  Row sfxVolumeRow(BuildContext context, bool sfxCheckBox) {
+    return Row(
+      children: [
+        Expanded(
+            flex: 2,
+            child: Text(LocaleKeys.sfxVolume.locale,
+                style: TextStyle(fontFamily: "ReggaeOne", fontSize: context.titleTextSize, color: Colors.white))),
+        Expanded(
+          child: sfxCheckBoxButton(sfxCheckBox),
+        )
+      ],
     );
   }
 

@@ -103,13 +103,8 @@ class _AnimatedCardState extends State<AnimatedCard> {
                   } else {
                     ///Means not your turn...
                     cardStatus = 0;
-                    debugPrint('not your turn!!!!');
-
-                    ///Burdan gelen değer geri döndürülecek!
                   }
                 }
-                //widget.onClick();
-                //debugPrint('tıklandı');
               },
               child: currentCardFace == CardFace.back
                   ? Container(
@@ -136,8 +131,8 @@ class _AnimatedCardState extends State<AnimatedCard> {
                   : Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(context.lowRadius),
-                        color: Color.fromARGB(255, 205, 201, 195),
-                        border: Border.all(color: Color.fromARGB(255, 162, 178, 159), width: 3),
+                        color: const Color.fromARGB(255, 205, 201, 195),
+                        border: Border.all(color: const Color.fromARGB(255, 162, 178, 159), width: 3),
                       ),
                       child: Center(child: CardText(text: widget.text)),
                     )),

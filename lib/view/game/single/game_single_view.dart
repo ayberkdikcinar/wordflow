@@ -51,21 +51,7 @@ class _GameViewState extends BaseState<GameView> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: Container(
-                      alignment: Alignment.topLeft,
-                      child: InkWell(
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Image(
-                            image: AssetImage('assets/icons/close_rect.png'),
-                          ),
-                        ),
-                        onTap: () {
-                          gameViewModel.gameStatus = GameStatus.finished;
-                          context.read<MenuViewModel>().changeStatus(MenuState.main);
-                        },
-                      ),
-                    ),
+                    child: closeRectContainer(),
                   ),
                   Expanded(
                     flex: 2,
@@ -85,34 +71,55 @@ class _GameViewState extends BaseState<GameView> {
                   Expanded(
                     flex: 10,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(context.highPadding),
                       child: boardCards(),
                     ),
                   )
                 ],
               ),
             ),
-            if (gameViewModel.gameStatus == GameStatus.finished)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(context.highPadding),
-                  child: GameFinishedCard(
-                      score: gameViewModel.player.getScore,
-                      continueClick: () {},
-                      retryClick: () {
-                        context.read<MenuViewModel>().changeStatus(MenuState.play);
-                      },
-                      homeClick: () {
-                        gameViewModel.gameStatus = GameStatus.finished;
-                        context.read<MenuViewModel>().changeStatus(MenuState.main);
-                      }),
-                )),
-              ),
+            if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer(),
           ],
         );
       });
+
+  Container gameFinishedContainer() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+          child: Padding(
+        padding: EdgeInsets.all(context.highPadding),
+        child: GameFinishedCard(
+            score: gameViewModel.player.getScore,
+            continueClick: () {},
+            retryClick: () {
+              context.read<MenuViewModel>().changeStatus(MenuState.play);
+            },
+            homeClick: () {
+              gameViewModel.gameStatus = GameStatus.finished;
+              context.read<MenuViewModel>().changeStatus(MenuState.main);
+            }),
+      )),
+    );
+  }
+
+  Container closeRectContainer() {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: InkWell(
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Image(
+            image: AssetImage('assets/icons/close_rect.png'),
+          ),
+        ),
+        onTap: () {
+          gameViewModel.gameStatus = GameStatus.finished;
+          context.read<MenuViewModel>().changeStatus(MenuState.main);
+        },
+      ),
+    );
+  }
 
   Padding hintTextWithPadding() {
     return Padding(

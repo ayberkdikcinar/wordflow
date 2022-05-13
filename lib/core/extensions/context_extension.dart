@@ -32,10 +32,6 @@ extension ContextExtension on BuildContext {
 
   ThemeData get theme => Theme.of(this);
   Color get defaultTextColor {
-    if (Theme.of(this).textTheme.bodyText1 != null && Theme.of(this).textTheme.bodyText1!.color != null) {
-      return Theme.of(this).textTheme.bodyText1!.color!;
-    } else {
-      return Colors.white;
-    }
+    return Colors.white;
   }
 }

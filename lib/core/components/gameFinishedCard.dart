@@ -38,31 +38,18 @@ class _GameFinishedCardState extends State<GameFinishedCard> {
             image: AssetImage('assets/cards/game-finished.png'),
           ),
           Positioned(
-            child: Text(
-              LocaleKeys.gameFinished.locale,
-              style: TextStyle(color: context.defaultTextColor, fontWeight: FontWeight.bold),
-            ),
+            child: gameFinishedText(context),
             top: cardHeight * 0.2,
             left: cardHeight * 0.33,
           ),
           if (widget.opponentScore != -999)
             Positioned(
-              child: Text(
-                widget.score > widget.opponentScore
-                    ? 'YOU WON'
-                    : widget.score == widget.opponentScore
-                        ? 'DRAW'
-                        : 'YOU LOST',
-                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
+              child: resultText(),
               top: cardHeight * 0.35,
               left: cardHeight * 0.33,
             ),
           Positioned(
-            child: Text(
-              '${LocaleKeys.score.locale.toUpperCase()}: ${widget.score}',
-              style: TextStyle(color: context.defaultTextColor),
-            ),
+            child: scoreTest(context),
             top: cardHeight * 0.75,
             left: cardHeight * 0.33,
           ),
@@ -82,6 +69,31 @@ class _GameFinishedCardState extends State<GameFinishedCard> {
               context: context, bottom: 0, left: cardHeight * 0.62, imagePath: 'assets/icons/home.png', onTap: widget.homeClick),
         ],
       ),
+    );
+  }
+
+  Text scoreTest(BuildContext context) {
+    return Text(
+      '${LocaleKeys.score.locale.toUpperCase()}: ${widget.score}',
+      style: TextStyle(color: context.defaultTextColor),
+    );
+  }
+
+  Text resultText() {
+    return Text(
+      widget.score > widget.opponentScore
+          ? 'YOU WON'
+          : widget.score == widget.opponentScore
+              ? 'DRAW'
+              : 'YOU LOST',
+      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Text gameFinishedText(BuildContext context) {
+    return Text(
+      LocaleKeys.gameFinished.locale,
+      style: TextStyle(color: context.defaultTextColor, fontWeight: FontWeight.bold),
     );
   }
 }

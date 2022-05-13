@@ -36,16 +36,20 @@ class HelpView extends StatelessWidget {
                   const Text('SINGLEPLAYER BASIC RULES\n'),
                 ],
               )),
-          PositionedIcon(
-              context: context,
-              bottom: 0,
-              left: context.dynamicWidth(0.33),
-              imagePath: "assets/icons/close.png",
-              onTap: () {
-                context.read<MenuViewModel>().changeStatus(MenuState.main);
-              })
+          closeIcon(context)
         ],
       ),
     );
+  }
+
+  PositionedIcon closeIcon(BuildContext context) {
+    return PositionedIcon(
+        context: context,
+        bottom: 0,
+        left: context.dynamicWidth(0.33),
+        imagePath: "assets/icons/close.png",
+        onTap: () {
+          context.read<MenuViewModel>().changeStatus(MenuState.main);
+        });
   }
 }
