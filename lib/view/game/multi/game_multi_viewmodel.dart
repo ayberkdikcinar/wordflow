@@ -11,13 +11,14 @@ import 'package:wordflow/view/player/player.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 
+import '../../../core/init/network/network_manager.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../board/board.dart';
 import '../single/game_single_viewmodel.dart';
 
 part 'game_multi_viewmodel.g.dart';
 
-enum GameStatus { stopped, finished, started, initializing }
+enum GameStatus { stopped, finished, started, initializing, error }
 
 class GameMultiViewModel = _GameMultiViewModelBase with _$GameMultiViewModel;
 
@@ -57,7 +58,10 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
   @observable
   List<String> readyPlayerIds = [];
 
+  NetworkManager networkManager = NetworkManager.instance;
+
   AudioCache soundPlayer = AudioCache();
+
   @action
   void socketConnect() {
     //http://192.168.1.5:3000
@@ -95,6 +99,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
       socket.on('load', handleLoadGame);
       socket.on('gameFinished', (_) {
         gameStatus = GameStatus.finished;
+        soundPlayer.play("sounds/game_finished.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
       });
     });
 
@@ -127,13 +132,11 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
     return playingPlayerId == socket.id.toString() ? 'YOUR TURN' : 'OPPONENT TURN';
   }
 
-  //
-  //
-  //
-  @override
   @action
-  void getModelAndFillData() {
+  Future<void> getModelAndFillData() async {
     board.clearData();
+    var testDataEN = await networkManager.dioGet(path: 'http://20.117.168.133:5000/', model: WordsRelation());
+    List<WordsRelation> list = testDataEN.cast<WordsRelation>();
     if (currentGameLanguage() == Language.turkish) {
       var testDataTR = [
         {
@@ -177,7 +180,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
           "totalCount": "4"
         },
       ];
-      board.fillTable(testDataTR);
+      //board.fillTable(testDataTR);
     } else {
       var testDataEN = [
         {
@@ -221,7 +224,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
           "totalCount": "3"
         },
       ];
-      board.fillTable(testDataEN);
+      board.fillTable(list);
     }
     board.setCurrentHint(0, currentGameLanguage());
   }
@@ -343,7 +346,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
     socket.disconnect();
   }
 
-  void handleStartGame(playerIds) {
+  Future<void> handleStartGame(playerIds) async {
     isReferee = socket.id == playerIds[0];
     final List<String> playerIdsData = List.from(playerIds).map((e) => e as String).toList();
     readyPlayerIds.addAll(playerIdsData);
@@ -353,7 +356,7 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
     soundPlayer.play("sounds/connected.wav", mode: PlayerMode.LOW_LATENCY, stayAwake: false);
 
     if (isReferee) {
-      getModelAndFillData();
+      await getModelAndFillData();
       loadBoardRandomly();
     }
     startGame();

@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordflow/core/components/customButton.dart';
@@ -17,6 +18,20 @@ class InQueueView extends StatefulWidget {
 }
 
 class _InQueueViewState extends State<InQueueView> {
+  AudioCache cache = AudioCache();
+  late AudioPlayer player;
+  @override
+  void initState() {
+    super.initState();
+    doSomeMusic();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    player.stop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -49,5 +64,10 @@ class _InQueueViewState extends State<InQueueView> {
         )
       ],
     );
+  }
+
+  void doSomeMusic() async {
+    player = await cache.loop('sounds/inqueue_sound.wav');
+    // wait 5 sec
   }
 }

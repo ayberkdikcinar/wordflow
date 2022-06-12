@@ -165,6 +165,15 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
     });
   }
 
+  final _$getModelAndFillDataAsyncAction =
+      AsyncAction('_GameMultiViewModelBase.getModelAndFillData');
+
+  @override
+  Future<void> getModelAndFillData() {
+    return _$getModelAndFillDataAsyncAction
+        .run(() => super.getModelAndFillData());
+  }
+
   final _$_GameMultiViewModelBaseActionController =
       ActionController(name: '_GameMultiViewModelBase');
 
@@ -207,17 +216,6 @@ mixin _$GameMultiViewModel on _GameMultiViewModelBase, Store {
         name: '_GameMultiViewModelBase.turnText');
     try {
       return super.turnText();
-    } finally {
-      _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void getModelAndFillData() {
-    final _$actionInfo = _$_GameMultiViewModelBaseActionController.startAction(
-        name: '_GameMultiViewModelBase.getModelAndFillData');
-    try {
-      return super.getModelAndFillData();
     } finally {
       _$_GameMultiViewModelBaseActionController.endAction(_$actionInfo);
     }

@@ -105,6 +105,7 @@ class _SettingsViewState extends State<SettingsView> {
       icon: const Icon(Icons.arrow_downward, color: Colors.white),
       style: TextStyle(color: Colors.white, fontSize: context.normalIconSize),
       underline: const SizedBox(),
+      dropdownColor: Colors.black,
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;

@@ -15,8 +15,8 @@ abstract class _BoardBase with Store {
   @observable
   String currentHint = "";
 
-  void fillTable(List<Map<String, Object>> data) {
-    wordsRelationList = data.map((e) => WordsRelation.fromJson(e)).toList();
+  void fillTable(List<WordsRelation> data) {
+    wordsRelationList = data;
   }
 
   void applyRandomness() {

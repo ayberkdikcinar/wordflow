@@ -53,9 +53,7 @@ class _MenuViewState extends State<MenuView> {
           backgroundColor: Colors.transparent,
           body: Container(
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: NetworkImage("https://mir-s3-cdn-cf.behance.net/project_modules/disp/24e95940185349.57751c99c9df9.gif"),
-                  fit: BoxFit.cover),
+              image: DecorationImage(image: AssetImage('assets/icons/giphy.gif'), fit: BoxFit.cover),
             ),
             child: Center(
               child: conditionalWidget(menuState),

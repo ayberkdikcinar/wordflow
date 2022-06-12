@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordflow/view/menu/menu_view.dart';
-import 'package:wordflow/view/settings/settings_view.dart';
 
 import 'core/constans/app_constants.dart';
 import 'core/init/cache/cache_manager.dart';
@@ -11,7 +10,6 @@ import 'core/init/language/language_manager.dart';
 import 'core/init/navigation/navigation_route.dart';
 import 'core/init/navigation/navigation_service.dart';
 import 'core/init/provider/app_provider.dart';
-import 'core/init/theme/theme_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +44,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.instance.navigatorKey,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
-      theme: context.watch<ThemeManager>().currentTheme(),
+      theme: ThemeData(
+          textTheme: const TextTheme()
+              .copyWith(bodyText1: const TextStyle(color: Colors.white), bodyText2: const TextStyle(color: Colors.white))),
       home: const MenuView(),
     );
   }

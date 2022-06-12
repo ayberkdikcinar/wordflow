@@ -85,15 +85,23 @@ mixin _$GameSingleViewModel on _GameSingleViewModelBase, Store {
     });
   }
 
+  final _$getDataFromAPIAsyncAction =
+      AsyncAction('_GameSingleViewModelBase.getDataFromAPI');
+
+  @override
+  Future<bool> getDataFromAPI() {
+    return _$getDataFromAPIAsyncAction.run(() => super.getDataFromAPI());
+  }
+
   final _$_GameSingleViewModelBaseActionController =
       ActionController(name: '_GameSingleViewModelBase');
 
   @override
-  void getModelAndFillData() {
+  void getModelAndFillData(List<WordsRelation> list) {
     final _$actionInfo = _$_GameSingleViewModelBaseActionController.startAction(
         name: '_GameSingleViewModelBase.getModelAndFillData');
     try {
-      return super.getModelAndFillData();
+      return super.getModelAndFillData(list);
     } finally {
       _$_GameSingleViewModelBaseActionController.endAction(_$actionInfo);
     }

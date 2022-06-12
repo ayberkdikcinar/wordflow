@@ -3,8 +3,6 @@ import 'package:provider/single_child_widget.dart';
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 
-import '../theme/theme_manager.dart';
-
 class ApplicationProvider {
   static ApplicationProvider? _instance;
   static ApplicationProvider? get instance {
@@ -16,9 +14,6 @@ class ApplicationProvider {
 
   List<SingleChildWidget> singleItems = [];
   List<SingleChildWidget> dependItems = [
-    ChangeNotifierProvider(
-      create: (context) => ThemeManager(),
-    ),
     ChangeNotifierProvider(
       create: (context) => SettingsViewModel(),
     ),

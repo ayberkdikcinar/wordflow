@@ -3,11 +3,13 @@ import 'package:mobx/mobx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:wordflow/core/base/model/base_gameviewmodel.dart';
+import 'package:wordflow/core/init/network/network_manager.dart';
 import 'package:wordflow/view/game/board/board.dart';
 import 'package:wordflow/view/player/player.dart';
 import 'package:wordflow/view/settings/settings_viewmodel.dart';
 // ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 
 import '../multi/game_multi_viewmodel.dart';
 part 'game_single_viewmodel.g.dart';
@@ -25,7 +27,7 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
   int round = 0;
   @observable
   bool isGameFinished = false;
-
+  NetworkManager networkManager = NetworkManager.instance;
   @observable
   int clickCount = 0;
 
@@ -33,11 +35,23 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
   GameStatus gameStatus = GameStatus.initializing;
 
   Board board = Board();
-  Player player = Player("Ayberk");
+  Player player = Player("You");
 
-  @override
   @action
-  void getModelAndFillData() {
+  Future<bool> getDataFromAPI() async {
+    var testDataEN = await networkManager.dioGet(path: 'http://20.117.168.133:5000/', model: WordsRelation());
+
+    if (testDataEN != null) {
+      List<WordsRelation> list = testDataEN.cast<WordsRelation>();
+      getModelAndFillData(list);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @action
+  void getModelAndFillData(List<WordsRelation> list) {
     board.clearData();
     if (currentGameLanguage() == Language.turkish) {
       var testDataTR = [
@@ -82,51 +96,9 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
           "totalCount": "3"
         },
       ];
-      board.fillTable(testDataTR);
+      //board.fillTable(testDataTR);
     } else {
-      var testDataEN = [
-        {
-          "hint": "country",
-          "relatedWords": ["Egypt", "France", "Turkey"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "green",
-          "relatedWords": ["Dollar", "Alien"],
-          "totalCount": "2"
-        },
-        {
-          "hint": "tennis",
-          "relatedWords": ["Racket", "Basketball", "Table"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "formula",
-          "relatedWords": ["Car", "Race", "Mercedes"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Giant", "Dinosaur", "Movie"],
-          "totalCount": "4"
-        },
-        {
-          "hint": "mountain",
-          "relatedWords": ["Everest", "Rock", "Hill"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "sky",
-          "relatedWords": ["Cloud", "Rain", "Rainbow"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "weapon",
-          "relatedWords": ["Knife", "Spear", "Sword"],
-          "totalCount": "3"
-        },
-      ];
-      board.fillTable(testDataEN);
+      board.fillTable(list);
     }
     board.setCurrentHint(round, currentGameLanguage());
     board.applyRandomness();

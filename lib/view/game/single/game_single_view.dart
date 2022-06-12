@@ -9,6 +9,7 @@ import 'package:wordflow/core/components/text/hintText.dart';
 import 'package:wordflow/core/extensions/context_extension.dart';
 
 import 'package:wordflow/view/menu/menu_viewmodel.dart';
+import 'package:wordflow/view/wordsRelation/model/words_relation_model.dart';
 import '../multi/game_multi_viewmodel.dart';
 import '/core/base/state/base_state.dart';
 import '/core/base/view/base_view.dart';
@@ -33,54 +34,140 @@ class _GameViewState extends BaseState<GameView> {
       },
       viewModel: GameSingleViewModel(),
       onInitState: () {
-        gameViewModel.getModelAndFillData();
+        Future.delayed(Duration.zero, () async {
+          bool response = await asyncMethod();
+          debugPrint(response.toString());
+          if (response) {
+            gameViewModel.gameStatus = GameStatus.started;
+          } else {
+            gameViewModel.gameStatus = GameStatus.stopped;
+          }
+        });
       },
       onPageBuilder: (context) => buildScaffold(),
     );
   }
 
   Widget buildScaffold() => Observer(builder: (_) {
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              color: const Color.fromARGB(255, 34, 40, 49),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: closeRectContainer(),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.all(context.lowPadding),
-                              child: Text(
-                                  'Find ${gameViewModel.board.wordsRelationList[gameViewModel.round].totalCount} words related with the given clue;'),
-                            )),
-                        Expanded(flex: 2, child: hintTextWithPadding()),
-                      ],
+        if (gameViewModel.gameStatus == GameStatus.started || gameViewModel.gameStatus == GameStatus.finished) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                color: const Color.fromARGB(255, 34, 40, 49),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: closeRectContainer(),
                     ),
-                  ),
-                  Expanded(
-                    flex: 10,
-                    child: Padding(
-                      padding: EdgeInsets.all(context.highPadding),
-                      child: boardCards(),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.all(context.lowPadding),
+                                child: Text(
+                                    'Find ${gameViewModel.board.wordsRelationList[gameViewModel.round].totalCount} words related with the given clue;'),
+                              )),
+                          Expanded(flex: 2, child: hintTextWithPadding()),
+                        ],
+                      ),
                     ),
-                  )
-                ],
+                    Expanded(
+                      flex: 10,
+                      child: Padding(
+                        padding: EdgeInsets.all(context.highPadding),
+                        child: boardCards(),
+                      ),
+                    )
+                  ],
+                ),
               ),
+              if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer()
+            ],
+          );
+        }
+        // ignore: curly_braces_in_flow_control_structures
+        if (gameViewModel.gameStatus == GameStatus.stopped) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    onPressed: () {
+                      context.read<MenuViewModel>().changeStatus(MenuState.main);
+                    },
+                    child: const Text('AN ERROR HAS BEEN OCCURRED'))
+              ],
             ),
-            if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer(),
-          ],
-        );
+          );
+        }
+        return const Center(child: CircularProgressIndicator(color: Colors.white));
+        /*return FutureBuilder<List<WordsRelation>>(
+          future: gameViewModel.getDataFromAPI(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
+            } else {
+              if (snapshot.hasData) {
+                gameViewModel.getModelAndFillData(snapshot.data!);
+
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer(),
+                    Container(
+                      color: const Color.fromARGB(255, 34, 40, 49),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: closeRectContainer(),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                    flex: 1,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(context.lowPadding),
+                                      child: Text(
+                                          'Find ${gameViewModel.board.wordsRelationList[gameViewModel.round].totalCount} words related with the given clue;'),
+                                    )),
+                                Expanded(flex: 2, child: hintTextWithPadding()),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Padding(
+                              padding: EdgeInsets.all(context.highPadding),
+                              child: boardCards(),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    //if (gameViewModel.gameStatus == GameStatus.finished) gameFinishedContainer(),
+                  ],
+                );
+              } else {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+            }
+          },
+        );*/
       });
 
   Container gameFinishedContainer() {
@@ -155,5 +242,11 @@ class _GameViewState extends BaseState<GameView> {
           ),
       ],
     );
+  }
+
+  Future<bool> asyncMethod() async {
+    return Future(() async {
+      return gameViewModel.getDataFromAPI();
+    });
   }
 }

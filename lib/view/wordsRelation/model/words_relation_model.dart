@@ -11,8 +11,7 @@ class WordsRelation extends BaseModel {
 
   WordsRelation({this.hint, this.relatedWords, this.totalCount});
 
-  factory WordsRelation.fromJson(Map<String, dynamic> json) =>
-      _$WordsRelationFromJson(json);
+  factory WordsRelation.fromJson(Map<String, dynamic> json) => _$WordsRelationFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$WordsRelationToJson(this);

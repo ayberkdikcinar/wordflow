@@ -21,8 +21,7 @@ class NetworkManager {
         ));*/
   }
 
-  Future dioGet<T extends BaseModel>(
-      {required String path, required T model, Options? options}) async {
+  Future dioGet<T extends BaseModel>({required String path, required T model, Options? options}) async {
     try {
       final response = await _dio.get(path, options: options);
 
@@ -30,6 +29,7 @@ class NetworkManager {
         case HttpStatus.ok:
           final responseBody = response.data;
           if (responseBody is List) {
+            debugPrint(responseBody.toString());
             return responseBody.map((e) => model.fromJson(e)).toList();
           } else if (responseBody is Map) {
             return model.fromJson(responseBody as Map<String, dynamic>);
@@ -44,8 +44,7 @@ class NetworkManager {
       }
     } catch (err) {
       if (err is DioError) {
-        Fluttertoast.showToast(
-            msg: 'Request failed. Please check your internet connection');
+        Fluttertoast.showToast(msg: 'Request failed. Please check your internet connection');
       }
       debugPrint('Error:' + err.toString());
     }
