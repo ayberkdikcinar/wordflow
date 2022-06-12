@@ -135,97 +135,15 @@ abstract class _GameMultiViewModelBase extends BaseGameViewModel with Store {
   @action
   Future<void> getModelAndFillData() async {
     board.clearData();
-    var testDataEN = await networkManager.dioGet(path: 'http://20.117.168.133:5000/', model: WordsRelation());
-    List<WordsRelation> list = testDataEN.cast<WordsRelation>();
+    String path = "http://20.117.168.133:5000/";
     if (currentGameLanguage() == Language.turkish) {
-      var testDataTR = [
-        {
-          "hint": "ülke",
-          "relatedWords": ["Mısır", "Fransa", "Turkiye"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "yeşil",
-          "relatedWords": ["Dolar", "Uzaylı"],
-          "totalCount": "2"
-        },
-        {
-          "hint": "tenis",
-          "relatedWords": ["Raket", "Basketbol", "Masa"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "formula",
-          "relatedWords": ["Araba", "Yarış", "Mersedes"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
-          "totalCount": "4"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
-          "totalCount": "4"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
-          "totalCount": "4"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
-          "totalCount": "4"
-        },
-      ];
-      //board.fillTable(testDataTR);
-    } else {
-      var testDataEN = [
-        {
-          "hint": "country",
-          "relatedWords": ["France", "Turkey", "Egypt"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "hallowen",
-          "relatedWords": ["Chocalate", "Pumpkin", "Ghost"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "tennis",
-          "relatedWords": ["Racket", "Court", "Table"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "king",
-          "relatedWords": ["Throne", "Prensess", "Kingdom"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "red",
-          "relatedWords": ["Ketchup", "Heart", "Laser"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "tooth",
-          "relatedWords": ["Shark", "Root", "Brush"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "formula",
-          "relatedWords": ["Car", "Race", "Mercedes"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Giant", "Dinosaur", "Movie"],
-          "totalCount": "3"
-        },
-      ];
-      board.fillTable(list);
+      path = "http://20.117.168.133:5000/tr";
     }
+    var testDataEN = await networkManager.dioGet(path: path, model: WordsRelation());
+    List<WordsRelation> list = testDataEN.cast<WordsRelation>();
+
+    board.fillTable(list);
+
     board.setCurrentHint(0, currentGameLanguage());
   }
 

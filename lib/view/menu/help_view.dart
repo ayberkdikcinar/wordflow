@@ -31,9 +31,7 @@ class HelpView extends StatelessWidget {
                     'HOW TO PLAY\n',
                     style: TextStyle(fontSize: context.highTextSize, color: Colors.black),
                   ),
-                  const Text('MULTIPLAYER BASIC RULES\n'),
-                  const Text('eğer böyle olursa şöyle olur\n'),
-                  const Text('SINGLEPLAYER BASIC RULES\n'),
+                  const Text('Basic information about game.\n'),
                 ],
               )),
           closeIcon(context)

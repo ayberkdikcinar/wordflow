@@ -39,7 +39,11 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
 
   @action
   Future<bool> getDataFromAPI() async {
-    var testDataEN = await networkManager.dioGet(path: 'http://20.117.168.133:5000/', model: WordsRelation());
+    String path = "http://20.117.168.133:5000/";
+    if (currentGameLanguage() == Language.turkish) {
+      path = "http://20.117.168.133:5000/tr";
+    }
+    var testDataEN = await networkManager.dioGet(path: path, model: WordsRelation());
 
     if (testDataEN != null) {
       List<WordsRelation> list = testDataEN.cast<WordsRelation>();
@@ -53,53 +57,9 @@ abstract class _GameSingleViewModelBase extends BaseGameViewModel with Store {
   @action
   void getModelAndFillData(List<WordsRelation> list) {
     board.clearData();
-    if (currentGameLanguage() == Language.turkish) {
-      var testDataTR = [
-        {
-          "hint": "ülke",
-          "relatedWords": ["Mısır", "Fransa", "Turkiye"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "yeşil",
-          "relatedWords": ["Dolar", "Uzaylı"],
-          "totalCount": "2"
-        },
-        {
-          "hint": "tenis",
-          "relatedWords": ["Raket", "Basketbol", "Masa"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "formula",
-          "relatedWords": ["Araba", "Yarış", "Mersedes"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "godzilla",
-          "relatedWords": ["Tokyo", "Dev", "Dinozor", "Film"],
-          "totalCount": "4"
-        },
-        {
-          "hint": "dağ",
-          "relatedWords": ["Everest", "Kayalık", "Tepe"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "gökyüzü",
-          "relatedWords": ["Bulut", "Yağmur", "Gökkuşağı"],
-          "totalCount": "3"
-        },
-        {
-          "hint": "silah",
-          "relatedWords": ["Bıçak", "Mızrak", "Kılıç"],
-          "totalCount": "3"
-        },
-      ];
-      //board.fillTable(testDataTR);
-    } else {
-      board.fillTable(list);
-    }
+
+    board.fillTable(list);
+
     board.setCurrentHint(round, currentGameLanguage());
     board.applyRandomness();
   } //yes
